@@ -21,13 +21,11 @@ public class PostHistory {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", nullable = false)
     Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     Member member;
 
     @Column(nullable = false)
