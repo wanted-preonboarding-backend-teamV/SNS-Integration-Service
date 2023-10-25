@@ -2,15 +2,19 @@ package com.wanted.teamV.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@RequiredArgsConstructor
 public class QueryDslConfig {
-/*    @Autowired private EntityManager entityManager;
+    @PersistenceContext
+    private final EntityManager entityManager;
+
     @Bean
     public JPAQueryFactory jpaQueryFactory(){
         return new JPAQueryFactory(entityManager);
-    }*/
+    }
 }
