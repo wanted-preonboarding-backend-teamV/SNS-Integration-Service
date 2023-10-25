@@ -23,6 +23,9 @@ public class Post {
     Long id;
 
     @Column(nullable = false)
+    String contentId;
+
+    @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     SnsType type;
 
@@ -53,7 +56,8 @@ public class Post {
     List<PostHashtag> postHashtags = new ArrayList<>();
 
     @Builder
-    public Post(String title, String content, SnsType type, int viewCount, int likeCount, int shareCount) {
+    public Post(String contentId, String title, String content, SnsType type, int viewCount, int likeCount, int shareCount) {
+        this.contentId = contentId;
         this.title = title;
         this.content = content;
         this.type = type;
