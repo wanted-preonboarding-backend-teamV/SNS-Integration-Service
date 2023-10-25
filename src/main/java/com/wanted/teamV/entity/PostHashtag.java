@@ -16,8 +16,7 @@ public class PostHashtag {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", nullable = false)
     Post post;
 
     @Column(nullable = false)
