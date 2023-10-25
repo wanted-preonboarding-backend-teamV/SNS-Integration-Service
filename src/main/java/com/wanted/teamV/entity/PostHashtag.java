@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostHashtag {
     @Id
-    @Column(name = "post_hastag_id")
+    @Column(name = "post_hashtag_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
