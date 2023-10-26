@@ -1,4 +1,4 @@
-package com.wanted.teamV.service.impl;
+package com.wanted.teamV.service;
 
 import com.wanted.teamV.dto.req.PostCreateReqDto;
 import com.wanted.teamV.entity.Post;
@@ -7,6 +7,7 @@ import com.wanted.teamV.exception.CustomException;
 import com.wanted.teamV.exception.ErrorCode;
 import com.wanted.teamV.repository.PostHashtagRepository;
 import com.wanted.teamV.repository.PostRepository;
+import com.wanted.teamV.service.impl.PostServiceImpl;
 import com.wanted.teamV.type.SnsType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ class PostServiceImplTest {
         String contentId = "12345";
         String title = "저녁";
         String content = "저녁먹음";
-        SnsType type = SnsType.INSTAGRAM;
+        String type = "instagram";
         int viewCount = 0;
         int likeCount = 0;
         int shareCount = 0;
@@ -82,7 +83,7 @@ class PostServiceImplTest {
         String invalidContentId = "";
         String title = "저녁";
         String content = "저녁먹음";
-        SnsType type = SnsType.INSTAGRAM;
+        String type = "instagram";
         int viewCount = 0;
         int likeCount = 0;
         int shareCount = 0;

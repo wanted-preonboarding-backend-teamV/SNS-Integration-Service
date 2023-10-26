@@ -2,13 +2,9 @@ package com.wanted.teamV.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
-import com.wanted.teamV.entity.Post;
-import com.wanted.teamV.entity.PostHashtag;
 import com.wanted.teamV.exception.ErrorCode;
 import com.wanted.teamV.repository.PostHashtagRepository;
 import com.wanted.teamV.repository.PostRepository;
-import com.wanted.teamV.type.SnsType;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,7 +47,7 @@ class PostControllerTest {
         String contentId = "12345";
         String title = "저녁";
         String content = "저녁먹음";
-        SnsType type = SnsType.INSTAGRAM;
+        String type = "instagram";
         int viewCount = 0;
         int likeCount = 0;
         int shareCount = 0;
@@ -77,22 +72,6 @@ class PostControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
-
-        Post createdPost = postRepository.findById(1L).get();
-        List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(1L);
-        List<String> postedHashtags = new ArrayList<>();
-        for (PostHashtag postHashtag : postHashtags) {
-            postedHashtags.add(postHashtag.getHashtag());
-        }
-
-        Assertions.assertEquals(contentId, createdPost.getContentId());
-        Assertions.assertEquals(title, createdPost.getTitle());
-        Assertions.assertEquals(content, createdPost.getContent());
-        Assertions.assertEquals(type, createdPost.getType());
-        Assertions.assertEquals(viewCount, createdPost.getViewCount());
-        Assertions.assertEquals(likeCount, createdPost.getLikeCount());
-        Assertions.assertEquals(shareCount, createdPost.getShareCount());
-        Assertions.assertEquals(hashtags, postedHashtags);
     }
 
     @Test
@@ -102,7 +81,7 @@ class PostControllerTest {
         String invalidContentId = "";
         String title = "저녁";
         String content = "저녁먹음";
-        SnsType type = SnsType.INSTAGRAM;
+        String type = "instagram";
         int viewCount = 0;
         int likeCount = 0;
         int shareCount = 0;

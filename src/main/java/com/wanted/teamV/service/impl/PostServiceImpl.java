@@ -8,6 +8,7 @@ import com.wanted.teamV.exception.ErrorCode;
 import com.wanted.teamV.repository.PostHashtagRepository;
 import com.wanted.teamV.repository.PostRepository;
 import com.wanted.teamV.service.PostService;
+import com.wanted.teamV.type.SnsType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,7 @@ public class PostServiceImpl implements PostService {
                 .contentId(request.getContentId())
                 .title(request.getTitle())
                 .content(request.getContent())
-                .type(request.getType())
+                .type(SnsType.parse(request.getType()))
                 .viewCount(request.getViewCount())
                 .likeCount(request.getLikeCount())
                 .shareCount(request.getShareCount())
@@ -47,4 +48,5 @@ public class PostServiceImpl implements PostService {
             postHashtagRepository.save(postHashtag);
         }
     }
+
 }
