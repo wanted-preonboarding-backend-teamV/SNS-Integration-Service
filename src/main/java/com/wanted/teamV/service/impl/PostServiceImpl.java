@@ -34,7 +34,7 @@ public class PostServiceImpl implements PostService {
     public PostDetailResDto getPostDetail(Long postId, Long memberId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(POST_NOT_FOUND));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
-        List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
+        List<String> postHashtags = postHashtagRepository.findHashTagsByPostId(postId);
 
         post.increaseViewCount();
         postRepository.save(post);

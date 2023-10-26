@@ -1,6 +1,5 @@
 package com.wanted.teamV.dto.res;
 
-import com.wanted.teamV.entity.PostHashtag;
 import com.wanted.teamV.type.SnsType;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +20,5 @@ public class PostDetailResDto {
     private int shareCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<PostHashtag> postHashtags;
+    private List<String> postHashtags;
 }
