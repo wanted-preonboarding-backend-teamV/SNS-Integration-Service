@@ -7,6 +7,7 @@ import com.wanted.teamV.dto.req.MemberLoginReqDto;
 import com.wanted.teamV.dto.res.MemberCodeResDto;
 import com.wanted.teamV.dto.res.MemberTokenResDto;
 import com.wanted.teamV.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<MemberCodeResDto> join(@RequestBody MemberJoinReqDto memberJoinReqDto) {
+    public ResponseEntity<MemberCodeResDto> join(@Valid @RequestBody MemberJoinReqDto memberJoinReqDto) {
         MemberCodeResDto memberCodeResDto = memberService.join(memberJoinReqDto);
         return ResponseEntity.ok(memberCodeResDto);
     }
