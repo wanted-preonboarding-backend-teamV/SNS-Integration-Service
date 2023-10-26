@@ -2,6 +2,7 @@ package com.wanted.teamV.service.impl;
 
 import com.wanted.teamV.dto.res.StatisticsResDto;
 import com.wanted.teamV.service.StatisticsService;
+import com.wanted.teamV.type.StatisticsSortType;
 import com.wanted.teamV.type.StatisticsTimeType;
 import com.wanted.teamV.type.StatisticsValueType;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class StatisticsServiceImpl implements StatisticsService {
     @Override
-    public List<StatisticsResDto> getCountsForEachTimeByHashtag(String hashtag, StatisticsTimeType timeType, LocalDate startDate, LocalDate endDate, StatisticsValueType valueType) {
+    public List<StatisticsResDto> getCountsForEachTimeByHashtag(String hashtag, StatisticsTimeType timeType, LocalDate startDate, LocalDate endDate, StatisticsValueType valueType, StatisticsSortType sortType) {
         return List.of(
                 new StatisticsResDto(timeType, LocalDateTime.of(startDate, LocalTime.MIN), 10),
                 new StatisticsResDto(timeType, LocalDateTime.of(startDate.minusDays(1), LocalTime.MIN.plusHours(1)), 11),

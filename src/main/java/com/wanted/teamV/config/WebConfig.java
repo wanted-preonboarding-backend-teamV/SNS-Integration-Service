@@ -1,5 +1,6 @@
 package com.wanted.teamV.config;
 
+import com.wanted.teamV.type.converter.StringToStatisticsSortTypeConverter;
 import com.wanted.teamV.type.converter.StringToStatisticsTimeTypeConverter;
 import com.wanted.teamV.type.converter.StringToStatisticsValueTypeConverter;
 import org.springframework.context.annotation.Configuration;
@@ -12,5 +13,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(new StringToStatisticsValueTypeConverter());
         registry.addConverter(new StringToStatisticsTimeTypeConverter());
+        registry.addConverter(new StringToStatisticsSortTypeConverter());
     }
 }

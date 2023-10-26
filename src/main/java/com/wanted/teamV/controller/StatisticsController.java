@@ -1,9 +1,8 @@
 package com.wanted.teamV.controller;
 
 import com.wanted.teamV.dto.res.StatisticsResDto;
-import com.wanted.teamV.exception.CustomException;
-import com.wanted.teamV.exception.ErrorCode;
 import com.wanted.teamV.service.StatisticsService;
+import com.wanted.teamV.type.StatisticsSortType;
 import com.wanted.teamV.type.StatisticsTimeType;
 import com.wanted.teamV.type.StatisticsValueType;
 import lombok.RequiredArgsConstructor;
@@ -21,26 +20,28 @@ public class StatisticsController {
 
     @GetMapping
     public ResponseEntity<List<StatisticsResDto>> getStatistics(
-        @RequestParam(required = false) String hashtag,
-        @RequestParam StatisticsTimeType type,
-        @RequestParam(required = false) LocalDate start,
-        @RequestParam(required = false) LocalDate end,
-        @RequestParam(required = false, defaultValue = "count") StatisticsValueType value
+        @RequestParam(value = "hashtag", required = false) String hashtag,
+        @RequestParam(value = "start", required = false) LocalDate startDate,
+        @RequestParam(value = "end", required = false) LocalDate endDate,
+        @RequestParam(value = "type", required = false, defaultValue = "date") StatisticsTimeType timeType,
+        @RequestParam(value = "value", required = false, defaultValue = "count") StatisticsValueType valueType,
+        @RequestParam(value = "sort", required = false, defaultValue = "desc") StatisticsSortType sortType
+
     ) {
 
         if (hashtag == null || hashtag.isBlank()) {
             // TODO - JWT 토큰에서 본인 계정 불러오기
             hashtag = "맛집";
         }
-        if (start == null) {
-            start = LocalDate.now().minusDays(7);
+        if (startDate == null) {
+            startDate = LocalDate.now().minusDays(7);
         }
-        if (end == null) {
-            end = LocalDate.now();
+        if (endDate == null) {
+            endDate = LocalDate.now();
         }
 
         List<StatisticsResDto> responses =
-                statisticsService.getCountsForEachTimeByHashtag(hashtag, type, start, end, value);
+                statisticsService.getCountsForEachTimeByHashtag(hashtag, timeType, startDate, endDate, valueType, sortType);
 
         return ResponseEntity.ok(responses);
     }
