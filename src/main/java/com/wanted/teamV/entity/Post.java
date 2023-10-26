@@ -65,4 +65,8 @@ public class Post {
         this.likeCount = likeCount;
         this.shareCount = shareCount;
     }
+
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
 }
