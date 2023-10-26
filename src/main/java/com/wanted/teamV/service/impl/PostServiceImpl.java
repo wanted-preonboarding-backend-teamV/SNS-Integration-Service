@@ -23,7 +23,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void createPost(PostCreateReqDto request) {
-        if (request.getContentId().isEmpty() || request.getTitle().isEmpty() || request.getContent().isEmpty()) {
+        if (request.getContentId().isBlank() || request.getTitle().isBlank() || request.getContent().isBlank()) {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
         }
 
