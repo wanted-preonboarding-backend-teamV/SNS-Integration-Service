@@ -11,11 +11,11 @@ import org.springframework.http.HttpStatus;
 public class CustomException extends RuntimeException {
     private ErrorCode errorCode;
     private String message;
-    private HttpStatus httpStatus;
+    private HttpStatus status;
 
     public CustomException(ErrorCode errorCode) {
         this.errorCode = errorCode;
         this.message = errorCode.getMessage();
-        this.httpStatus = errorCode.getStatus();
+        this.status = errorCode.getStatus();
     }
 }
