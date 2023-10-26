@@ -3,6 +3,8 @@ package com.wanted.teamV.service.impl;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
 import com.wanted.teamV.entity.Post;
 import com.wanted.teamV.entity.PostHashtag;
+import com.wanted.teamV.exception.CustomException;
+import com.wanted.teamV.exception.ErrorCode;
 import com.wanted.teamV.repository.PostHashtagRepository;
 import com.wanted.teamV.repository.PostRepository;
 import com.wanted.teamV.service.PostService;
@@ -21,6 +23,10 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void createPost(PostCreateReqDto request) {
+        if (request.getContentId().isEmpty() || request.getTitle().isEmpty() || request.getContent().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
+        }
+
         Post post = Post.builder()
                 .contentId(request.getContentId())
                 .title(request.getTitle())

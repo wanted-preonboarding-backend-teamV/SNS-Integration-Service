@@ -3,6 +3,7 @@ package com.wanted.teamV.controller;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
 import com.wanted.teamV.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,10 +17,11 @@ public class PostController {
 
     // 게시물 생성 API
     @PostMapping
-    public void createPost(
+    public ResponseEntity<Void> createPost(
             @RequestBody PostCreateReqDto request
     ) {
         postService.createPost(request);
+        return ResponseEntity.ok().build();
     }
 
 }
