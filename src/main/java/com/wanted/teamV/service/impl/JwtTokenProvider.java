@@ -53,9 +53,9 @@ public class JwtTokenProvider {
                     .getExpiration()
                     .before(new Date());
         } catch (ExpiredJwtException e) {
-            throw new CustomException(EXPIRE_TOKEN, EXPIRE_TOKEN.getMessage(), EXPIRE_TOKEN.getStatus());
+            throw new CustomException(EXPIRE_TOKEN);
         } catch (JwtException | IllegalArgumentException e) {
-            throw new CustomException(INVALID_TOKEN, INVALID_TOKEN.getMessage(), INVALID_TOKEN.getStatus());
+            throw new CustomException(INVALID_TOKEN);
         }
     }
 

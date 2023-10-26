@@ -47,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
 
     private void validateUniqueAccount(String account) {
         if(memberRepository.existsByAccount(account)) {
-            throw new CustomException(INVALID_REQUEST, INVALID_REQUEST.getMessage(), INVALID_REQUEST.getStatus());
+            throw new CustomException(INVALID_REQUEST);
         }
     }
 
@@ -56,7 +56,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.getByAccount(memberApproveReqDto.account());
 
         if(!passwordEncoder.matches(memberApproveReqDto.password(), member.getPassword())) {
-            throw new CustomException(INVALID_REQUEST, INVALID_REQUEST.getMessage(), INVALID_REQUEST.getStatus());
+            throw new CustomException(INVALID_REQUEST);
         }
 
         member.verifyCode(memberApproveReqDto.code());
@@ -68,7 +68,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.getByAccount(memberLoginReqDto.account());
 
         if(!passwordEncoder.matches(memberLoginReqDto.password(), member.getPassword())) {
-            throw new CustomException(INVALID_REQUEST, INVALID_REQUEST.getMessage(), INVALID_REQUEST.getStatus());
+            throw new CustomException(INVALID_REQUEST);
         }
 
         String accessToken = authTokenCreator.createAuthToken(member.getId());

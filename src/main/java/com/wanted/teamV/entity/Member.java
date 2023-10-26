@@ -45,7 +45,7 @@ public class Member {
 
     public void verifyCode(String code) {
          if(!this.code.equalsIgnoreCase(code)) {
-            throw new CustomException(INVALID_AUTHENTICATION_CODE, INVALID_AUTHENTICATION_CODE.getMessage(), INVALID_AUTHENTICATION_CODE.getStatus());
+            throw new CustomException(INVALID_AUTHENTICATION_CODE);
          };
     }
 

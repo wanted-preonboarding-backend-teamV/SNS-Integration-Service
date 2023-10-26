@@ -14,7 +14,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     default Member getByAccount(String account) {
         return findByAccount(account)
-                .orElseThrow(() -> new CustomException(NOT_FOUND, NOT_FOUND.getMessage(), NOT_FOUND.getStatus()));
+                .orElseThrow(() -> new CustomException(NOT_FOUND));
     }
 }
 

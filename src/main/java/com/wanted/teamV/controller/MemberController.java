@@ -19,26 +19,34 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<MemberCodeResDto> join(@Valid @RequestBody MemberJoinReqDto memberJoinReqDto) {
+    public ResponseEntity<MemberCodeResDto> join(
+            @Valid @RequestBody MemberJoinReqDto memberJoinReqDto
+    ) {
         MemberCodeResDto memberCodeResDto = memberService.join(memberJoinReqDto);
         return ResponseEntity.ok(memberCodeResDto);
     }
 
     @PostMapping("/approve")
-    public ResponseEntity<Void> approve(@RequestBody MemberApproveReqDto memberApproveReqDto) {
+    public ResponseEntity<Void> approve(
+            @RequestBody MemberApproveReqDto memberApproveReqDto
+    ) {
         memberService.approve(memberApproveReqDto);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<MemberTokenResDto> login(@RequestBody MemberLoginReqDto memberLoginReqDto) {
+    public ResponseEntity<MemberTokenResDto> login(
+            @RequestBody MemberLoginReqDto memberLoginReqDto
+    ) {
         MemberTokenResDto memberTokenResDto = memberService.login(memberLoginReqDto);
         return ResponseEntity.ok(memberTokenResDto);
     }
 
     //JWT 유효성을 검증하는 예시입니다.
     @GetMapping("/validate/token")
-    public ResponseEntity<Void> validateToken(@AuthenticationPrincipal LoginMember loginMember) {
+    public ResponseEntity<Void> validateToken(
+            @AuthenticationPrincipal LoginMember loginMember
+    ) {
         return ResponseEntity.ok().build();
     }
 }
