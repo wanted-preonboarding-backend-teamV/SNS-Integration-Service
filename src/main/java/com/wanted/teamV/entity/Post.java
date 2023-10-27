@@ -2,12 +2,10 @@ package com.wanted.teamV.entity;
 
 import com.wanted.teamV.type.SnsType;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,6 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Post {
     @Id
     @Column(name = "post_id")
@@ -65,4 +64,5 @@ public class Post {
         this.likeCount = likeCount;
         this.shareCount = shareCount;
     }
+
 }
