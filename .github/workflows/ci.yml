@@ -24,10 +24,9 @@ jobs:
     - name: Setup MySQL
       uses: actions/mysql-action@v1
       with:
-        character set server: 'utf8'
-        host port: 3306
         mysql database: 'sns_teamv'
-        mysql root password: ${{secrets.DATABASE_PW}}
+        mysql user: 'root'
+        mysql password: ${{secrets.DATABASE_PW}}
 
     - name: gradlew 실행 권한 설정
       run: chmod +x gradlew
