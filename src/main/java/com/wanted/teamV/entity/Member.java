@@ -1,11 +1,14 @@
 package com.wanted.teamV.entity;
 
+import com.wanted.teamV.exception.CustomException;
 import com.wanted.teamV.type.MemberStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import static com.wanted.teamV.exception.ErrorCode.INVALID_AUTHENTICATION_CODE;
 
 @Entity
 @Getter
@@ -38,5 +41,15 @@ public class Member {
         this.email = email;
         this.code = code;
         this.status = status;
+    }
+
+    public void verifyCode(String code) {
+         if(!this.code.equalsIgnoreCase(code)) {
+            throw new CustomException(INVALID_AUTHENTICATION_CODE);
+         };
+    }
+
+    public void approve() {
+        this.status = MemberStatus.APPROVE;
     }
 }
