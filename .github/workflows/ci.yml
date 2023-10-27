@@ -20,6 +20,14 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        
+    - name: Setup MySQL
+      uses: samin/mysql-action@v1
+      with:
+        character set server: 'utf8'
+        mysql database: 'sns_teamv'
+        mysql user: 'root'
+        mysql password: ${{secrets.DATABASE_PW}}
 
     - name: gradlew 실행 권한 설정
       run: chmod +x gradlew
