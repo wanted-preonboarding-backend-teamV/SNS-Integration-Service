@@ -1,8 +1,11 @@
 package com.wanted.teamV.controller;
 
 import com.wanted.teamV.dto.res.StatisticsResDto;
+import com.wanted.teamV.entity.Member;
 import com.wanted.teamV.exception.CustomException;
 import com.wanted.teamV.exception.ErrorCode;
+import com.wanted.teamV.repository.MemberRepository;
+import com.wanted.teamV.service.MemberService;
 import com.wanted.teamV.service.StatisticsService;
 import com.wanted.teamV.type.StatisticsSortType;
 import com.wanted.teamV.type.StatisticsTimeType;
@@ -24,9 +27,12 @@ public class StatisticsController {
     private static final int MAX_HOUR_PERIOD = 7;
 
     private final StatisticsService statisticsService;
+    private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     @GetMapping
     public ResponseEntity<List<StatisticsResDto>> getStatistics(
+        @RequestHeader(value = "Authorization", required = false) String authToken,
         @RequestParam(value = "hashtag", required = false) String hashtag,
         @RequestParam(value = "start", required = false) LocalDate startDate,
         @RequestParam(value = "end", required = false) LocalDate endDate,
@@ -37,8 +43,7 @@ public class StatisticsController {
     ) {
 
         if (hashtag == null || hashtag.isBlank()) {
-            // TODO - JWT 토큰에서 본인 계정 불러오기
-            hashtag = "맛집";
+            hashtag = getMemberAccount(authToken);
         }
 
         if (startDate == null && endDate == null) {
@@ -64,6 +69,16 @@ public class StatisticsController {
                 statisticsService.getCountsForEachTimeByHashtag(hashtag, timeType, startDate, endDate, valueType, sortType);
 
         return ResponseEntity.ok(responses);
+    }
+
+    private String getMemberAccount(String authToken) {
+        if (authToken == null || authToken.isBlank()) {
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
+        }
+        Long memberId = memberService.extractUserId(authToken);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_REQUEST));
+        return member.getAccount();
     }
 
     private boolean exceedMaxPeriod(LocalDate startDate, LocalDate endDate, StatisticsTimeType timeType) {
