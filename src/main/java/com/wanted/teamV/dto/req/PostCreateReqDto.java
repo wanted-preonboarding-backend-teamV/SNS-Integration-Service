@@ -1,6 +1,5 @@
 package com.wanted.teamV.dto.req;
 
-import com.wanted.teamV.type.SnsType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,7 +12,7 @@ public class PostCreateReqDto {
     private String contentId;
     private String title;
     private String content;
-    private SnsType type;
+    private String type;
     private int viewCount;
     private int likeCount;
     private int shareCount;
