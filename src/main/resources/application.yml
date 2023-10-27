@@ -11,7 +11,8 @@ spring:
       show-sql: true
       properties:
         hibernate.format_sql: true
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQL8InnoDBDialect
+
 
 logging:
   level:
