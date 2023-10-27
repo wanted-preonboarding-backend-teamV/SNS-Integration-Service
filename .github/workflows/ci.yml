@@ -19,6 +19,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+    - name: Mysql
+      uses: samin/mysql-action@v1
+      with:
+        host port: 3306
+        container port: 3306
+        character set server: 'utf8'
+        mysql database: 'sns_teamv'
+        mysql root password: ${{ secrets.ROOT_PASSWORD }}
+
     - uses: actions/checkout@v3
 
     - name: Gradle Caching
