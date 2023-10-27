@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.wanted.teamV.exception.ErrorCode.INVALID_REQUEST;
+import static com.wanted.teamV.exception.ErrorCode.NOT_APPROVED;
 
 @Service
 @Transactional
@@ -69,6 +70,10 @@ public class MemberServiceImpl implements MemberService {
 
         if(!passwordEncoder.matches(memberLoginReqDto.password(), member.getPassword())) {
             throw new CustomException(INVALID_REQUEST);
+        }
+
+        if(!member.isApproved()) {
+            throw new CustomException(NOT_APPROVED);
         }
 
         String accessToken = authTokenCreator.createAuthToken(member.getId());
