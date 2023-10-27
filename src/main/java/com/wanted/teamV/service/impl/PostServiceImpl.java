@@ -32,7 +32,7 @@ public class PostServiceImpl implements PostService {
                 .contentId(request.getContentId())
                 .title(request.getTitle())
                 .content(request.getContent())
-                .type(SnsType.toEnum(request.getType()))
+                .type(SnsType.parse(request.getType()))
                 .viewCount(request.getViewCount())
                 .likeCount(request.getLikeCount())
                 .shareCount(request.getShareCount())
