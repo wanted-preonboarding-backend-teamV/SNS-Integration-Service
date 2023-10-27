@@ -9,7 +9,8 @@ public enum ErrorCode {
     INVALID_AUTHENTICATION_CODE(HttpStatus.BAD_REQUEST, "인증코드가 올바르지 않습니다."),
     EXPIRE_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 토큰입니다."),
-    EMPTY_AUTHORIZATION_HEADER(HttpStatus.BAD_REQUEST, "인증헤더가 비어있습니다.");
+    EMPTY_AUTHORIZATION_HEADER(HttpStatus.BAD_REQUEST, "인증헤더가 비어있습니다."),
+    NOT_APPROVED(HttpStatus.UNAUTHORIZED, "가입이 아직 승인되지 않았습니다.")
     ;
 
     private final HttpStatus status;
