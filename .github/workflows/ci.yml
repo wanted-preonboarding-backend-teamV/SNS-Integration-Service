@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -22,11 +21,11 @@ jobs:
         distribution: 'temurin'
         
     - name: Setup MySQL
-      uses: actions/mysql-action@v1
+      uses: samin/mysql-action@v1
       with:
         mysql database: 'sns_teamv'
         mysql user: 'root'
-        mysql password: ${{secrets.DATABASE_PW}}
+        mysql password: ${{secrets.DATABASE_PW}}     
 
     - name: gradlew 실행 권한 설정
       run: chmod +x gradlew
