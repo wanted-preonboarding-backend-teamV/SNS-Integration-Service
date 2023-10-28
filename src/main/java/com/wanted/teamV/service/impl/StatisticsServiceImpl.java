@@ -71,13 +71,14 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
 
         dateStream.forEach(date -> {
+            String dateString = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
             if (timeType == StatisticsTimeType.HOUR) {
                 for (int i = 0; i < 24; i++) {
                     LocalDateTime dateTime = date.atTime(i, 0);
-                    dateTimes.put(dateTime, dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh")));
+                    dateTimes.put(dateTime, String.format("%s-%02d", dateString, i));
                 }
             } else {
-                dateTimes.put(date.atStartOfDay(), date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+                dateTimes.put(date.atStartOfDay(), dateString);
             }
         });
         return dateTimes;
