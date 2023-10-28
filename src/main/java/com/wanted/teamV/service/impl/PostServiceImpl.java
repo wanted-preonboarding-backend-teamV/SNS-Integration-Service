@@ -127,14 +127,12 @@ public class PostServiceImpl implements PostService {
             response = restTemplate.postForEntity(apiUri, contentId, String.class);
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.MOVED_PERMANENTLY) {
                 post.increaseLikeCount();
+            } else if (response == null) {
+                response = ResponseEntity.status(HttpStatus.OK).body("OK");
             }
         } catch (HttpClientErrorException ex) {
             ex.printStackTrace();
             post.increaseLikeCount();
-        }
-
-        if (response == null) {
-            response = ResponseEntity.status(HttpStatus.OK).body("OK");
         }
 
         PostHistory postHistory = PostHistory.builder()
