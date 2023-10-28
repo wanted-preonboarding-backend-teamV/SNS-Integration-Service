@@ -7,19 +7,25 @@ import com.wanted.teamV.repository.PostRepository;
 import com.wanted.teamV.service.PostService;
 import com.wanted.teamV.type.SnsType;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.List;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @AutoConfigureMockMvc
@@ -40,6 +46,9 @@ public class PostControllerTest {
 
     @MockBean
     private MemberRepository memberRepository;
+
+    @MockBean
+    private RestTemplate restTemplate;
 
     @Test
     void getPostDetails() throws Exception {
@@ -77,6 +86,25 @@ public class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.postHashtags[0]").value(response.getPostHashtags().get(0)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.postHashtags[1]").value(response.getPostHashtags().get(1)))
                 .andDo(print());
+
+    }
+
+    @Test
+    void increaseLikeCount() throws Exception {
+        //given
+        Long postId = 1L, memberId = 1L;
+        ResponseEntity<?> apiResponse = ResponseEntity.ok("OK");
+
+        Mockito.doReturn(apiResponse)
+                .when(restTemplate)
+                .postForEntity(any(URI.class), any(), eq(String.class));
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts/likes/{postId}", postId))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        //then
+        verify(postService, times(1)).increaseLike(postId, memberId);
 
     }
 }
