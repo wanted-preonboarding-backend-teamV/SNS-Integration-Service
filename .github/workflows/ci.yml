@@ -28,7 +28,7 @@ jobs:
         container port: 3306
         character set server: 'utf8'
         mysql database: 'sns_teamv_test'
-        mysql user: 'test',
+        mysql user: 'test'
         mysql password: ${{ secrets.ROOT_PASSWORD }}
 
     - name: Gradle Caching
@@ -39,7 +39,7 @@ jobs:
           ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
-          ${{ runner.os }}-gradle-
+          ${{ runner.os }}-gradle
 
     - name: JDK 17 설치
       uses: actions/setup-java@v3
