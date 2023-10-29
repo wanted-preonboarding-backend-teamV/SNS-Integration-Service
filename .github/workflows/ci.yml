@@ -48,3 +48,9 @@ jobs:
       if: always()
       with:
        files: '**/build/test-results/test/TEST-*.xml'
+
+    - name: 실패한 테스트 코맨트 등록
+      uses: mikepenz/action-junit-report@v3
+      if: always()
+      with:
+        report_paths: '**/build/test-results/test/TEST-*.xml'

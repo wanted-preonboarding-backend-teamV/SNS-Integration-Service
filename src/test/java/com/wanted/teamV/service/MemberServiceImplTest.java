@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberServiceImplTest {
 
     @Autowired
-    private MemberService memberService;
+    MemberService memberService;
 
     @Nested
     @DisplayName("회원가입을 한다.")
