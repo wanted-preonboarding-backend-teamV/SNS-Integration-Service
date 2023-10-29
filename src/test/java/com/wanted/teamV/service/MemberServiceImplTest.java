@@ -34,5 +34,19 @@ public class MemberServiceImplTest {
 
             //then
         }
+
+        @Test
+        @DisplayName("실패: 테스트")
+        void fail() {
+            //given
+            MemberJoinReqDto memberJoinReqDto = new MemberJoinReqDto("namse", "test@gmail.com", "test@2123#@");
+            memberService.join(memberJoinReqDto);
+
+            //when
+            MemberJoinReqDto memberJoinReqDto2 = new MemberJoinReqDto("namse", "test@gmail.com", "test@2123#@");
+            memberService.join(memberJoinReqDto2);
+
+            //then
+        }
     }
 }
