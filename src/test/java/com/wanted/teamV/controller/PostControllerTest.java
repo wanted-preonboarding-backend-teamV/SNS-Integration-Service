@@ -107,4 +107,23 @@ public class PostControllerTest {
         verify(postService, times(1)).increaseLike(postId, memberId);
 
     }
+
+    @Test
+    void increaseShareCount() throws Exception {
+        //given
+        Long postId = 1L, memberId = 1L;
+        ResponseEntity<?> apiResponse = ResponseEntity.ok("OK");
+
+        Mockito.doReturn(apiResponse)
+                .when(restTemplate)
+                .postForEntity(any(URI.class), any(), eq(String.class));
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts/shares/{postId}", postId))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        //then
+        verify(postService, times(1)).increaseShare(postId, memberId);
+
+    }
 }

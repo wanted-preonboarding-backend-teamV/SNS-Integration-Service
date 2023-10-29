@@ -123,4 +123,37 @@ public class PostServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(apiResponseOk, response);
     }
+
+    @Test
+    void increaseShareCount() throws Exception {
+        //given
+        Long postId = 1L, memberId = 1L;
+        Post post = Post.builder()
+                .contentId("123")
+                .title("Test Post")
+                .content("This is a test post.")
+                .type(SnsType.X)
+                .viewCount(0)
+                .likeCount(0)
+                .shareCount(0)
+                .build();
+
+        Member member = Member.builder().build();
+
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+        ResponseEntity<?> apiResponseOk = ResponseEntity.ok("Test");
+
+        Mockito.doReturn(apiResponseOk)
+                .when(restTemplate)
+                .postForEntity(any(URI.class), any(), eq(String.class));
+
+        //when
+        ResponseEntity<?> response = postService.increaseShare(postId, memberId);
+
+        //then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(apiResponseOk, response);
+    }
 }
