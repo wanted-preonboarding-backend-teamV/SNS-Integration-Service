@@ -19,8 +19,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
     - name: Mysql
       uses: samin/mysql-action@v1
       with:
@@ -30,6 +28,8 @@ jobs:
         mysql database: 'sns_teamv_test'
         mysql user: 'test',
         mysql password: ${{ secrets.ROOT_PASSWORD }}
+
+    - uses: actions/checkout@v3
 
     - name: Gradle Caching
       uses: actions/cache@v3
