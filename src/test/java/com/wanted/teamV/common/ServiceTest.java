@@ -1,4 +1,4 @@
-package com.wanted.teamV;
+package com.wanted.teamV.common;
 
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
