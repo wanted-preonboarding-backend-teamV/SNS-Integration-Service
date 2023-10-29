@@ -17,29 +17,25 @@ import static com.wanted.teamV.exception.ErrorCode.INVALID_REQUEST;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
+    public ResponseEntity<?> handleCustomException(CustomException e) {
         ErrorResponse response = ErrorResponse.builder()
-                .errorCode(e.getErrorCode())
                 .message(e.getMessage())
                 .build();
-
         log.warn("{} is occurred.", e.getMessage());
-        return ResponseEntity.status(e.getStatus()).body(response);
+        return new ResponseEntity<>(response, e.getHttpStatus());
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        ErrorResponse response = ErrorResponse.builder()
-                .errorCode(INTERNAL_SERVER_ERROR)
-                .message(INTERNAL_SERVER_ERROR.getMessage())
-                .build();
-
+    public ErrorResponse handleException(Exception e) {
         log.error("Exception is occurred.", e);
-        return ResponseEntity.status(response.getErrorCode().getStatus()).body(response);
+
+        return new ErrorResponse(
+                INTERNAL_SERVER_ERROR,
+                INTERNAL_SERVER_ERROR.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         StringBuilder errorMessage = new StringBuilder();
 
@@ -47,24 +43,16 @@ public class GlobalExceptionHandler {
             errorMessage.append(fieldError.getDefaultMessage()).append("; ");
         }
 
-        ErrorResponse response = ErrorResponse.builder()
-                .errorCode(INVALID_REQUEST)
-                .message(errorMessage.toString())
-                .build();
-
         log.error("MethodArgumentNotValidException is occurred.", e);
-        return ResponseEntity.status(response.getErrorCode().getStatus()).body(response);
+        return ResponseEntity.badRequest().body(
+                new ErrorResponse(INVALID_REQUEST, INVALID_REQUEST.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        ErrorResponse response = ErrorResponse.builder()
-                .errorCode(INVALID_REQUEST)
-                .message(INVALID_REQUEST.getMessage())
-                .build();
-
+    public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         log.error("DataIntegrityViolationException is occurred.", e);
-        return ResponseEntity.status(response.getErrorCode().getStatus()).body(response);
+        return ResponseEntity.badRequest().body(
+                new ErrorResponse(INVALID_REQUEST, INVALID_REQUEST.getMessage()));
     }
 
 }
