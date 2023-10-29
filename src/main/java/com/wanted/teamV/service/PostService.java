@@ -7,4 +7,7 @@ public interface PostService {
     PostDetailResDto getPostDetail(Long postId, Long memberId);
 
     ResponseEntity<?> increaseLike(Long postId, Long memberId);
+
+    ResponseEntity<?> increaseShare(Long postId, Long memberId);
+
 }

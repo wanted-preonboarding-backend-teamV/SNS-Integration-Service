@@ -149,4 +149,63 @@ public class PostServiceImpl implements PostService {
 
         return response;
     }
+
+    @Override
+    public ResponseEntity<?> increaseShare(Long postId, Long memberId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        String contentId = post.getContentId();
+        String url = "";
+
+        switch (post.getType()) {
+            case FACEBOOK:
+                url = "https://www.facebook.com";
+                break;
+            case INSTAGRAM:
+                url = "https://www.instagram.com";
+                break;
+            case X:
+                url = "https://www.twitter.com";
+                break;
+            case THREADS:
+                url = "https://www.threads.com";
+                break;
+        }
+
+        URI apiUri = UriComponentsBuilder
+                .fromUriString(url)
+                .path("/shares/{contendId}")
+                .encode()
+                .buildAndExpand(contentId)
+                .toUri();
+
+        ResponseEntity<?> response = null;
+
+        try {
+            response = restTemplate.postForEntity(apiUri, contentId, String.class);
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.MOVED_PERMANENTLY) {
+                post.increaseShareCount();
+            } else if (response == null) {
+                response = ResponseEntity.status(HttpStatus.OK).body("OK");
+            }
+        } catch (HttpClientErrorException ex) {
+            ex.printStackTrace();
+            post.increaseShareCount();
+        }
+
+        PostHistory postHistory = PostHistory.builder()
+                .post(post)
+                .member(member)
+                .type(HistoryType.SHARE)
+                .build();
+
+        try {
+            postHistoryRepository.save(postHistory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
 }

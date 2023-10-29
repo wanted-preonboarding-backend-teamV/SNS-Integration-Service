@@ -3,7 +3,6 @@ package com.wanted.teamV.controller;
 import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +26,15 @@ public class PostController {
     ) {
         Long memberId = 1L;
         ResponseEntity<?> response = postService.increaseLike(postId, memberId);
+        return ResponseEntity.ok(response.getStatusCode());
+    }
+
+    @PostMapping("/shares/{postId}")
+    public ResponseEntity<?> increaseShare(
+            @PathVariable Long postId
+    ) {
+        Long memberId = 1L;
+        ResponseEntity<?> response = postService.increaseShare(postId, memberId);
         return ResponseEntity.ok(response.getStatusCode());
     }
 }
