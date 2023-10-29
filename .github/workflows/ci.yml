@@ -24,12 +24,12 @@ jobs:
     - name: Mysql
       uses: samin/mysql-action@v1
       with:
-        host port: 3306
-        container port: 3306
+        host port: 3307
+        container port: 3307
         character set server: 'utf8'
         mysql database: 'sns_teamv_test'
         mysql user: 'test'
-        mysql password: ${{ secrets.ROOT_PASSWORD }}
+        mysql password: 'nswon0729@'
 
     - name: Gradle Caching
       uses: actions/cache@v3
