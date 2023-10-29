@@ -1,17 +1,13 @@
 package com.wanted.teamV.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
 public class CustomException extends RuntimeException {
-    private ErrorCode errorCode;
-    private String message;
-    private HttpStatus status;
+    private final ErrorCode errorCode;
+    private final String message;
+    private final HttpStatus status;
 
     public CustomException(ErrorCode errorCode) {
         this.errorCode = errorCode;

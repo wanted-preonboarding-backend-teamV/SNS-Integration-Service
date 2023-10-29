@@ -20,8 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.wanted.teamV.exception.ErrorCode.INVALID_PAGE_REQUEST;
-import static com.wanted.teamV.exception.ErrorCode.INVALID_REQUEST;
+import static com.wanted.teamV.exception.ErrorCode.*;
 
 @RestController
 @RequestMapping("/posts")
@@ -58,6 +57,10 @@ public class PostController {
             @RequestParam(value = "pageCount", required = false) Integer pageCount,
             @PageableDefault(page = 0, size = 10) Pageable pageable
     ) {
+        if (type != null && SnsType.parse(type) == null) {
+            throw new CustomException(INVALID_SNS_TYPE);
+        }
+
         if (hashtag == null || hashtag.isBlank()) {
             hashtag = getMemberAccount(loginMember.id());
         }

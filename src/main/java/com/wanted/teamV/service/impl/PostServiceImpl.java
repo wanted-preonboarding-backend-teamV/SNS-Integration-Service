@@ -22,8 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.wanted.teamV.exception.ErrorCode.INVALID_PAGE_REQUEST;
-import static com.wanted.teamV.exception.ErrorCode.NO_RELATED_POSTS_FOUND;
+import static com.wanted.teamV.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
