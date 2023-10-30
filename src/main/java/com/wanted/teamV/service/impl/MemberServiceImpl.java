@@ -15,8 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.wanted.teamV.exception.ErrorCode.INVALID_REQUEST;
-import static com.wanted.teamV.exception.ErrorCode.NOT_APPROVED;
+import static com.wanted.teamV.exception.ErrorCode.*;
 
 @Service
 @Transactional
@@ -48,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
 
     private void validateUniqueAccount(String account) {
         if(memberRepository.existsByAccount(account)) {
-            throw new CustomException(INVALID_REQUEST);
+            throw new CustomException(INVALID_DUPLICATE_ACCOUNT);
         }
     }
 
@@ -57,7 +56,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.getByAccount(memberApproveReqDto.account());
 
         if(!passwordEncoder.matches(memberApproveReqDto.password(), member.getPassword())) {
-            throw new CustomException(INVALID_REQUEST);
+            throw new CustomException(INVALID_PASSWORD);
         }
 
         member.verifyCode(memberApproveReqDto.code());
@@ -69,7 +68,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.getByAccount(memberLoginReqDto.account());
 
         if(!passwordEncoder.matches(memberLoginReqDto.password(), member.getPassword())) {
-            throw new CustomException(INVALID_REQUEST);
+            throw new CustomException(INVALID_PASSWORD);
         }
 
         if(!member.isApproved()) {
