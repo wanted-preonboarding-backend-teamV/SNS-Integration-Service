@@ -11,6 +11,8 @@ public enum ErrorCode {
     NO_RELATED_POSTS_FOUND(HttpStatus.NOT_FOUND, "관련 게시물이 없습니다."),
     INVALID_SNS_TYPE(HttpStatus.BAD_REQUEST, "지원되지 않는 sns 타입 입니다."),
     INVALID_AUTHENTICATION_CODE(HttpStatus.BAD_REQUEST, "인증코드가 올바르지 않습니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다."),
+    DUPLICATE_ACCOUNT(HttpStatus.BAD_REQUEST, "중복된 계정입니다."),
     EXPIRE_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 토큰입니다."),
     EMPTY_AUTHORIZATION_HEADER(HttpStatus.BAD_REQUEST, "인증헤더가 비어있습니다."),
