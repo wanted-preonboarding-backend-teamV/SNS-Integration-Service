@@ -68,7 +68,7 @@ public class MemberServiceImplTest {
 
             assertThatThrownBy(() -> memberService.join(memberJoinReqDto))
                     .isInstanceOf(CustomException.class)
-                    .hasMessageContaining(INVALID_DUPLICATE_ACCOUNT.getMessage());
+                    .hasMessageContaining(DUPLICATE_ACCOUNT.getMessage());
         }
     }
 

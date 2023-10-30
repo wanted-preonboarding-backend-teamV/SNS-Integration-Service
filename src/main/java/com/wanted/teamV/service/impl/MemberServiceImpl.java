@@ -47,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
 
     private void validateUniqueAccount(String account) {
         if(memberRepository.existsByAccount(account)) {
-            throw new CustomException(INVALID_DUPLICATE_ACCOUNT);
+            throw new CustomException(DUPLICATE_ACCOUNT);
         }
     }
 
