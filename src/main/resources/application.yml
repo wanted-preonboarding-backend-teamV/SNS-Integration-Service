@@ -1,13 +1,15 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/sns_teamv?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/sns_teamv?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
     username: root
-    password:
+    password: ${MYSQL_PASSWORD}
 
   jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
       show-sql: true
       properties:
         hibernate.format_sql: true
@@ -15,3 +17,10 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
+
+security:
+  jwt:
+    token:
+      secret-key: ${JWT_SECRET_KEY}
+      access:
+        expire-length: 2592000000 #30일
