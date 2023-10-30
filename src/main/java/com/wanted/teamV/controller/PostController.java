@@ -1,5 +1,6 @@
 package com.wanted.teamV.controller;
 
+import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.dto.LoginMember;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
 import com.wanted.teamV.dto.res.ListResDto;
@@ -12,6 +13,7 @@ import com.wanted.teamV.type.OrderByType;
 import com.wanted.teamV.type.SearchByType;
 import com.wanted.teamV.type.SnsType;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -77,9 +79,20 @@ public class PostController {
         return ResponseEntity.ok(responses);
     }
 
+    //게시물 상세 조회 API
+    @GetMapping("/{postId}/{memberId}")
+    public ResponseEntity<PostDetailResDto> getPostDetails(
+      @PathVariable Long postId, @PathVariable Long memberId
+    ) {
+        PostDetailResDto responseDto = postService.getPostDetail(postId, memberId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+
     private String getMemberAccount(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(INVALID_REQUEST));
         return member.getAccount();
     }
 }
+

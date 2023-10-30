@@ -1,5 +1,6 @@
 package com.wanted.teamV.service;
 
+import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
 import com.wanted.teamV.dto.res.ListResDto;
 import com.wanted.teamV.dto.res.PostResDto;
@@ -14,4 +15,6 @@ public interface PostService {
 
     ListResDto<PostResDto> getPosts(String hashtag, SnsType type, OrderByType orderByType, SearchByType searchBy,
                                           String search, Pageable pageable);
+  
+    PostDetailResDto getPostDetail(Long postId, Long memberId);
 }
