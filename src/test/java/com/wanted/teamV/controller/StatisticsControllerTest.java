@@ -6,6 +6,7 @@ import com.wanted.teamV.dto.req.MemberApproveReqDto;
 import com.wanted.teamV.dto.req.MemberJoinReqDto;
 import com.wanted.teamV.dto.req.MemberLoginReqDto;
 import com.wanted.teamV.exception.ErrorCode;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,11 +34,17 @@ class StatisticsControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private EntityManager entityManager;
 
     private String accessToken;
 
     @BeforeEach
     void setUp() throws Exception {
+        entityManager
+                .createNativeQuery("CREATE ALIAS IF NOT EXISTS date_format FOR \"com.wanted.teamV.common.H2CustomAlias.date_format\"")
+                .executeUpdate();
+
         // 회원가입
         MemberJoinReqDto joinReqDto = new MemberJoinReqDto("qwertyasdf12345", "abc@gmail.com", "qwerty1234!");
         MvcResult result = mockMvc.perform(post("/members")
