@@ -16,7 +16,6 @@ public class ListResDto<PostResDto> {
     private long totalElements;
     private long size;
     private long number;
-    private Sort sort;
     private long numberOfElements;
     private boolean first;
     private boolean empty;
@@ -24,20 +23,11 @@ public class ListResDto<PostResDto> {
     @Getter
     @Setter
     public static class Pageable {
-        private Sort sort;
         private long offset;
         private long pageSize;
         private long pageNumber;
         private boolean paged;
         private boolean unpaged;
-    }
-
-    @Getter
-    @Setter
-    public static class Sort {
-        private boolean sorted;
-        private boolean unsorted;
-        private boolean empty;
     }
 
 }

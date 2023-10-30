@@ -1,30 +1,28 @@
 package com.wanted.teamV.service.impl;
 
 
-import com.wanted.teamV.dto.res.PostDetailResDto;
-import com.wanted.teamV.entity.Member;
-import com.wanted.teamV.entity.PostHistory;
-import com.wanted.teamV.repository.MemberRepository;
-import com.wanted.teamV.repository.PostHistoryRepository;
-import com.wanted.teamV.type.HistoryType;
-
 import com.wanted.teamV.dto.req.PostCreateReqDto;
 import com.wanted.teamV.dto.res.ListResDto;
+import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.dto.res.PostResDto;
+import com.wanted.teamV.entity.Member;
 import com.wanted.teamV.entity.Post;
 import com.wanted.teamV.entity.PostHashtag;
+import com.wanted.teamV.entity.PostHistory;
 import com.wanted.teamV.exception.CustomException;
 import com.wanted.teamV.exception.ErrorCode;
+import com.wanted.teamV.repository.MemberRepository;
 import com.wanted.teamV.repository.PostHashtagRepository;
+import com.wanted.teamV.repository.PostHistoryRepository;
 import com.wanted.teamV.repository.PostRepository;
 import com.wanted.teamV.service.PostService;
+import com.wanted.teamV.type.HistoryType;
 import com.wanted.teamV.type.OrderByType;
 import com.wanted.teamV.type.SearchByType;
 import com.wanted.teamV.type.SnsType;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,11 +33,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.wanted.teamV.exception.ErrorCode.*;
+import static com.wanted.teamV.exception.ErrorCode.INVALID_PAGE_REQUEST;
+import static com.wanted.teamV.exception.ErrorCode.NO_RELATED_POSTS_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -137,13 +135,17 @@ public class PostServiceImpl implements PostService {
      * @param orderBy  : 정렬 순서 (default = created_at_desc) 날짜, 조회수, 좋아요수, 공유수
      * @param searchBy : 검색어가 제목, 내용 또는 제목&내용(default)에 포함되어 있는 게시물만 검색
      * @param search   : 검색어
-     * @param pageable : 한 페이지에 보여줄 게시물 개수 및 현재 보여줄 페이지
+     * @param pageCount : 페이지당 게시물 갯수
+     * @param page : 조회하려는 페이지
      * @return
      */
     @Override
     @Transactional
     public ListResDto<PostResDto> getPosts(String hashtag, SnsType type, OrderByType orderBy, SearchByType searchBy,
-                                           String search, Pageable pageable) {
+                                           String search, int pageCount, int page) {
+        if (pageCount <= 0 || page < 0) {
+            throw new CustomException(INVALID_PAGE_REQUEST);
+        }
 
         List<Long> postIds = postHashtagRepository.findPostIdsByHashtag(hashtag);
 
@@ -157,13 +159,14 @@ public class PostServiceImpl implements PostService {
             throw new CustomException(NO_RELATED_POSTS_FOUND);
         }
 
+        Pageable pageable = PageRequest.of(page, pageCount);
+
         // 페이지네이션 적용
         int totalElements = filteredPosts.size();
         int fromIndex = (int) pageable.getOffset();
-        int pageSize = pageable.getPageSize();
-        int toIndex = Math.min(fromIndex + pageSize, totalElements);
+        int toIndex = Math.min(fromIndex + pageCount, totalElements);
 
-        if (fromIndex < 0 || fromIndex >= totalElements || pageSize <= 0) {
+        if (fromIndex < 0 || fromIndex >= totalElements) {
             throw new CustomException(INVALID_PAGE_REQUEST);
         }
 
@@ -184,12 +187,11 @@ public class PostServiceImpl implements PostService {
         ListResDto<PostResDto> response = new ListResDto<>();
         response.setContent(postResDtos);
         response.setPageable(createPageable(pageable));
-        response.setLast(pageable.getPageNumber() >= (totalElements / pageSize));
-        response.setTotalPages((long) Math.ceil((double) totalElements / pageSize));
+        response.setLast(pageable.getPageNumber() >= (totalElements / pageCount));
+        response.setTotalPages((long) Math.ceil((double) totalElements / pageCount));
         response.setTotalElements(totalElements);
         response.setSize(pageable.getPageSize());
         response.setNumber(pageable.getPageNumber());
-        response.setSort(createSort(pageable.getSort()));
         response.setNumberOfElements(pagedPosts.size());
         response.setFirst(pageable.first().isPaged());
         response.setEmpty(pagedPosts.isEmpty());
@@ -199,7 +201,6 @@ public class PostServiceImpl implements PostService {
 
     private ListResDto.Pageable createPageable(Pageable pageable) {
         ListResDto.Pageable result = new ListResDto.Pageable();
-        result.setSort(createSort(pageable.getSort()));
         result.setOffset(pageable.getOffset());
         result.setPageSize(pageable.getPageSize());
         result.setPageNumber(pageable.getPageNumber());
@@ -208,16 +209,6 @@ public class PostServiceImpl implements PostService {
 
         return result;
     }
-
-    private ListResDto.Sort createSort(Sort sort) {
-        ListResDto.Sort result = new ListResDto.Sort();
-        result.setSorted(sort.isSorted());
-        result.setUnsorted(sort.isUnsorted());
-        result.setEmpty(sort.isEmpty());
-
-        return result;
-    }
-
 
     @Override
     public ResponseEntity<?> increaseLike(Long postId, Long memberId) {

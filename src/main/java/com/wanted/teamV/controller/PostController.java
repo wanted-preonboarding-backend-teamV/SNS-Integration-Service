@@ -1,9 +1,9 @@
 package com.wanted.teamV.controller;
 
-import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.dto.LoginMember;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
 import com.wanted.teamV.dto.res.ListResDto;
+import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.dto.res.PostResDto;
 import com.wanted.teamV.entity.Member;
 import com.wanted.teamV.exception.CustomException;
@@ -14,9 +14,6 @@ import com.wanted.teamV.type.SearchByType;
 import com.wanted.teamV.type.SnsType;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,8 +53,8 @@ public class PostController {
             @RequestParam(value = "orderBy", defaultValue = "created_at_desc") String orderBy,
             @RequestParam(value = "searchBy", defaultValue = "both") String searchBy,
             @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "pageCount", required = false) Integer pageCount,
-            @PageableDefault(page = 0, size = 10) Pageable pageable
+            @RequestParam(value = "pageCount", defaultValue = "10") int pageCount,
+            @RequestParam(value = "page", defaultValue = "0") int page
     ) {
         if (type != null && SnsType.parse(type) == null) {
             throw new CustomException(INVALID_SNS_TYPE);
@@ -67,15 +64,8 @@ public class PostController {
             hashtag = getMemberAccount(loginMember.id());
         }
 
-        if (pageCount != null) {
-            if (pageCount <= 0) {
-                throw new CustomException(INVALID_PAGE_REQUEST);
-            }
-            pageable = PageRequest.of(pageable.getPageNumber(), pageCount, pageable.getSort());
-        }
-
         ListResDto<PostResDto> responses = postService.getPosts(hashtag, SnsType.parse(type),
-                OrderByType.parse(orderBy), SearchByType.parse(searchBy), search, pageable);
+                OrderByType.parse(orderBy), SearchByType.parse(searchBy), search, pageCount, page);
         return ResponseEntity.ok(responses);
     }
 
