@@ -16,7 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMapAdapter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +40,7 @@ class PostControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    String token;
+    private String token;
 
     @BeforeEach
     public void commonSetup() throws Exception {
@@ -74,20 +77,21 @@ class PostControllerTest {
         token = JsonPath.parse(response).read("$.accessToken");
     }
 
+    @BeforeEach
     @Test
     @DisplayName("게시물 생성 - 성공")
     public void createPost_Success() throws Exception {
         // given
-        String contentId = "12345";
-        String title = "저녁";
-        String content = "저녁먹음";
+        String contentId = "post1";
+        String title = "성수동 맛집 투어";
+        String content = "오늘은 성수동 맛집 투어를 다녀왔습니다. 총 3군데를 다녀왔는데 여기는 어쩌구 저기는 저쩌구 했습니다.";
         String type = "instagram";
-        int viewCount = 0;
-        int likeCount = 0;
-        int shareCount = 0;
-        List<String> hashtags = Arrays.asList("음식", "dinner");
+        int viewCount = 100;
+        int likeCount = 40;
+        int shareCount = 10;
+        List<String> hashtags = Arrays.asList("맛집", "성수동");
 
-        PostCreateReqDto request = PostCreateReqDto.builder()
+        PostCreateReqDto request1 = PostCreateReqDto.builder()
                 .contentId(contentId)
                 .title(title)
                 .content(content)
@@ -102,7 +106,38 @@ class PostControllerTest {
         mockMvc.perform(post("/posts")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
+                        .content(objectMapper.writeValueAsString(request1))
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        // given
+        String contentId2 = "post2";
+        String title2 = "맛집 투어";
+        String content2 = "오늘은 성수동 맛집 투어를 다녀왔습니다. 총 3군데를 다녀왔는데 여기는 어쩌구 저기는 저쩌구 했습니다.";
+        String type2 = "facebook";
+        int viewCount2 = 50;
+        int likeCount2 = 35;
+        int shareCount2 = 20;
+        List<String> hashtags2 = Arrays.asList("맛집", "성수동");
+
+        PostCreateReqDto request2 = PostCreateReqDto.builder()
+                .contentId(contentId2)
+                .title(title2)
+                .content(content2)
+                .type(type2)
+                .viewCount(viewCount2)
+                .likeCount(likeCount2)
+                .shareCount(shareCount2)
+                .hashtags(hashtags2)
+                .build();
+
+        // when & then
+        mockMvc.perform(post("/posts")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request2))
                 )
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -140,8 +175,153 @@ class PostControllerTest {
                         .content(objectMapper.writeValueAsString(request))
                 )
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("INVALID_REQUEST"))
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.INVALID_REQUEST.name()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_REQUEST.getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시물 조회 해시태그 및 정렬 - 성공")
+    public void getPosts_Hashtag_Order() throws Exception {
+        // given
+        MultiValueMapAdapter<String, String> params = new LinkedMultiValueMap<>();
+        params.add("hashtag", "맛집");
+
+        // 해시태그 검색
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .params(params)
+                        .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        // 정렬
+        params.add("orderBy", "share_count_desc");
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .params(params)
+                        .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시물 조회 해시태그 입력 없을 때 - 성공")
+    public void getPosts_no_hashtag() throws Exception {
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시물 조회 타입 검색 - 성공")
+    public void getPosts_filterByType() throws Exception {
+        // given
+        MultiValueMapAdapter<String, String> params = new LinkedMultiValueMap<>();
+        params.add("hashtag", "맛집");
+        params.add("type", "instagram");
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .params(params)
+                        .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시물 조회 제목 검색 - 성공")
+    public void getPosts_searchByTitle() throws Exception {
+        // given
+        MultiValueMapAdapter<String, String> params = new LinkedMultiValueMap<>();
+        params.add("hashtag", "맛집");
+        params.add("searchBy", "title");
+        params.add("search", "성수동");
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .params(params)
+                        .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시물 조회 페이징 처리 - 성공")
+    public void getPosts_Pageable() throws Exception {
+        // given
+        MultiValueMapAdapter<String, String> params = new LinkedMultiValueMap<>();
+        params.add("hashtag", "맛집");
+        params.add("size", "1");
+        params.add("page", "0");
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .params(params)
+                        .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시물 조회 없는 페이지 요청")
+    public void getPosts_Pageable_Failure() throws Exception {
+        // given
+        MultiValueMapAdapter<String, String> params = new LinkedMultiValueMap<>();
+        params.add("hashtag", "맛집");
+        params.add("size", "1");
+        params.add("page", "2");
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .params(params)
+                        .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.INVALID_PAGE_REQUEST.name()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_PAGE_REQUEST.getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시물 조회 - 관련 게시물 없음")
+    public void getPosts_NotRelatedPosts() throws Exception {
+        //given
+        MultiValueMapAdapter<String, String> params = new LinkedMultiValueMap<>();
+        params.add("hashtag", "음식");
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .params(params)
+                        .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시물 조회 잘못된 SNS 타입 요청")
+    public void getPosts_InvalidType() throws Exception {
+        // given
+        MultiValueMapAdapter<String, String> params = new LinkedMultiValueMap<>();
+        params.add("hashtag", "맛집");
+        params.add("type", "twitter");
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .params(params)
+                        .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.INVALID_SNS_TYPE.name()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_SNS_TYPE.getMessage()))
                 .andDo(print());
     }
 
