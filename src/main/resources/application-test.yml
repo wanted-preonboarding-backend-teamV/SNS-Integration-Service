@@ -1,0 +1,33 @@
+server:
+  port: 4000
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:sns_teamv_test?serverTimezone=Asia/Seoul;MODE=MYSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Seoul
+    show-sql: true
+
+  h2:
+    console:
+      enabled: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+security:
+  jwt:
+    token:
+      secret-key: c3ByaW5nLWJvb3QtdGVzdC1zZWNyZXQta2V5 #test key
+      access:
+        expire-length: 1210000000 #14일

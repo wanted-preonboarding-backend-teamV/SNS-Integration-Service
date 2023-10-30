@@ -82,5 +82,4 @@ public class PostController {
                 .orElseThrow(() -> new CustomException(INVALID_REQUEST));
         return member.getAccount();
     }
-
 }
