@@ -6,7 +6,11 @@ import com.wanted.teamV.dto.req.MemberApproveReqDto;
 import com.wanted.teamV.dto.req.MemberJoinReqDto;
 import com.wanted.teamV.dto.req.MemberLoginReqDto;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
+import com.wanted.teamV.entity.Post;
 import com.wanted.teamV.exception.ErrorCode;
+import com.wanted.teamV.repository.PostRepository;
+import com.wanted.teamV.service.impl.PostServiceImpl;
+import com.wanted.teamV.type.SnsType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -40,6 +45,9 @@ class PostControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private PostRepository postRepository;
 
     private String token;
 
@@ -337,10 +345,28 @@ class PostControllerTest {
     @DisplayName("게시물 상세 정보 조회 - 성공")
     public void getPostDetails() throws Exception {
         //given
-        Long postId = 1L;
+        String contentId = "post3";
+        String title = "성수동 맛집 투어";
+        String content = "오늘은 성수동 맛집 투어를 다녀왔습니다. 총 3군데를 다녀왔는데 여기는 어쩌구 저기는 저쩌구 했습니다.";
+        SnsType type = SnsType.INSTAGRAM;
+        int viewCount = 100;
+        int likeCount = 40;
+        int shareCount = 10;
+
+        Post post3 = Post.builder()
+                .contentId(contentId)
+                .title(title)
+                .content(content)
+                .type(type)
+                .viewCount(viewCount)
+                .likeCount(likeCount)
+                .shareCount(shareCount)
+                .build();
+
+        Post post = postRepository.save(post3);
 
         //when & then
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts/post/{postId}", postId)
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/post/{postId}", post.getId())
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -367,10 +393,28 @@ class PostControllerTest {
     @DisplayName("게시물 좋아요 - 성공")
     public void increaseLikeCount() throws Exception {
         //given
-        Long postId = 1L;
+        String contentId = "post3";
+        String title = "성수동 맛집 투어";
+        String content = "오늘은 성수동 맛집 투어를 다녀왔습니다. 총 3군데를 다녀왔는데 여기는 어쩌구 저기는 저쩌구 했습니다.";
+        SnsType type = SnsType.INSTAGRAM;
+        int viewCount = 100;
+        int likeCount = 40;
+        int shareCount = 10;
+
+        Post post3 = Post.builder()
+                .contentId(contentId)
+                .title(title)
+                .content(content)
+                .type(type)
+                .viewCount(viewCount)
+                .likeCount(likeCount)
+                .shareCount(shareCount)
+                .build();
+
+        Post post = postRepository.save(post3);
 
         //when & then
-        mockMvc.perform(post("/posts/likes/{postId}", postId)
+        mockMvc.perform(post("/posts/likes/{postId}", post.getId())
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -395,10 +439,28 @@ class PostControllerTest {
     @DisplayName("게시물 공유 - 성공")
     public void increaseShareCount() throws Exception {
         //given
-        Long postId = 1L;
+        String contentId = "post3";
+        String title = "성수동 맛집 투어";
+        String content = "오늘은 성수동 맛집 투어를 다녀왔습니다. 총 3군데를 다녀왔는데 여기는 어쩌구 저기는 저쩌구 했습니다.";
+        SnsType type = SnsType.INSTAGRAM;
+        int viewCount = 100;
+        int likeCount = 40;
+        int shareCount = 10;
+
+        Post post3 = Post.builder()
+                .contentId(contentId)
+                .title(title)
+                .content(content)
+                .type(type)
+                .viewCount(viewCount)
+                .likeCount(likeCount)
+                .shareCount(shareCount)
+                .build();
+
+        Post post = postRepository.save(post3);
 
         //when & then
-        mockMvc.perform(post("/posts/shares/{postId}", postId)
+        mockMvc.perform(post("/posts/shares/{postId}", post.getId())
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andDo(print());
