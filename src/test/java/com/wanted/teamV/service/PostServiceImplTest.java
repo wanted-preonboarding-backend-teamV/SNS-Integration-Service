@@ -2,14 +2,20 @@ package com.wanted.teamV.service;
 
 import com.wanted.teamV.dto.req.PostCreateReqDto;
 import com.wanted.teamV.dto.res.ListResDto;
+import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.dto.res.PostResDto;
+import com.wanted.teamV.entity.Member;
 import com.wanted.teamV.entity.Post;
 import com.wanted.teamV.entity.PostHashtag;
+import com.wanted.teamV.entity.PostHistory;
 import com.wanted.teamV.exception.CustomException;
 import com.wanted.teamV.exception.ErrorCode;
+import com.wanted.teamV.repository.MemberRepository;
 import com.wanted.teamV.repository.PostHashtagRepository;
+import com.wanted.teamV.repository.PostHistoryRepository;
 import com.wanted.teamV.repository.PostRepository;
 import com.wanted.teamV.service.impl.PostServiceImpl;
+import com.wanted.teamV.type.HistoryType;
 import com.wanted.teamV.type.OrderByType;
 import com.wanted.teamV.type.SearchByType;
 import com.wanted.teamV.type.SnsType;
@@ -18,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,6 +53,12 @@ class PostServiceImplTest {
 
     @Mock
     private PostHashtagRepository postHashtagRepository;
+
+    @Mock
+    private MemberRepository memberRepository;
+
+    @Mock
+    private PostHistoryRepository postHistoryRepository;
 
     @Test
     @DisplayName("게시물 생성 - 성공")
@@ -225,4 +239,52 @@ class PostServiceImplTest {
         assertEquals(ErrorCode.NO_RELATED_POSTS_FOUND, customException.getErrorCode());
     }
 
+    @Test
+    @DisplayName("게시물 상세 조회 - 성공")
+    public void getPostDetails() throws Exception {
+        Post post = Post.builder()
+                .contentId("123")
+                .title("Test Post")
+                .content("This is a test post.")
+                .type(SnsType.FACEBOOK)
+                .viewCount(0)
+                .likeCount(0)
+                .shareCount(0)
+                .build();
+
+        Member member = Member.builder().build();
+        List<String> hashtags = List.of("맛집", "서울");
+
+        PostHistory postHistory = PostHistory.builder()
+                .post(post)
+                .member(member)
+                .type(HistoryType.VIEW)
+                .build();
+
+        when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
+        when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
+        when(postHashtagRepository.findHashTagsByPostId(post.getId())).thenReturn(hashtags);
+        when(postHistoryRepository.save(Mockito.any(PostHistory.class))).thenReturn(postHistory);
+
+        //when
+        PostDetailResDto resDto = postService.getPostDetail(post.getId(), member.getId());
+
+        //then
+        assertEquals(post.getId(), resDto.getId());
+        assertEquals(post.getType(), resDto.getType());
+        assertEquals(post.getTitle(), resDto.getTitle());
+        assertEquals(post.getViewCount(), resDto.getViewCount());
+        assertEquals(hashtags, resDto.getPostHashtags());
+    }
+
+    @Test
+    @DisplayName("게시물 상세 조회 - 실패(게시물 없음)")
+    public void getPostDetails_No_Post() throws Exception {
+        //given
+
+        //when & then
+        CustomException customException = assertThrows(CustomException.class,
+                () -> postService.getPostDetail(2L, 1L));
+        assertEquals(ErrorCode.POST_NOT_FOUND, customException.getErrorCode());
+    }
 }

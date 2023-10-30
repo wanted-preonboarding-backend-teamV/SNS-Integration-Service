@@ -48,13 +48,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 class PostControllerTest {
-  
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
-  
+
     private String token;
 
     @BeforeEach
@@ -340,4 +340,53 @@ class PostControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("게시물 상세 정보 조회 - 성공")
+    public void getPostDetails() throws Exception {
+        //given
+        PostDetailResDto response = PostDetailResDto.builder()
+                .id(1L)
+                .contentId("INSTA#1")
+                .type(SnsType.INSTAGRAM)
+                .title("test")
+                .content("test1234")
+                .viewCount(10)
+                .likeCount(20)
+                .shareCount(5)
+                .postHashtags(List.of("test1", "test2"))
+                .build();
+
+        //when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/post/{postId}", response.getId())
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시물 상세 정보 조회 - 실패(게시물 없음)")
+    public void getPostDetails_No_Post() throws Exception {
+        //given
+        PostDetailResDto response = PostDetailResDto.builder()
+                .id(1L)
+                .contentId("INSTA#1")
+                .type(SnsType.INSTAGRAM)
+                .title("test")
+                .content("test1234")
+                .viewCount(10)
+                .likeCount(20)
+                .shareCount(5)
+                .postHashtags(List.of("test1", "test2"))
+                .build();
+
+        //when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/post/{postId}", 3L)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.POST_NOT_FOUND.name()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.POST_NOT_FOUND.getMessage()))
+                .andDo(print());
+    }
 }
