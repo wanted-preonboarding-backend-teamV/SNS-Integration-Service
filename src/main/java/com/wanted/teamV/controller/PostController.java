@@ -88,6 +88,15 @@ public class PostController {
         return ResponseEntity.ok(responseDto);
     }
 
+    //게시물 좋아요 API
+    @PostMapping("/likes/{postId}")
+    public ResponseEntity<?> increaseLike(
+            @PathVariable Long postId
+    ) {
+        Long memberId = 1L;
+        ResponseEntity<?> response = postService.increaseLike(postId, memberId);
+        return ResponseEntity.ok(response.getStatusCode());
+    }
 
     private String getMemberAccount(Long memberId) {
         Member member = memberRepository.findById(memberId)

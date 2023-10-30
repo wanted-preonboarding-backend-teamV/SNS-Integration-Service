@@ -8,6 +8,7 @@ import com.wanted.teamV.type.OrderByType;
 import com.wanted.teamV.type.SearchByType;
 import com.wanted.teamV.type.SnsType;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 
 public interface PostService {
     // 게시물 생성 메서드
@@ -17,4 +18,6 @@ public interface PostService {
                                           String search, Pageable pageable);
   
     PostDetailResDto getPostDetail(Long postId, Long memberId);
+
+    ResponseEntity<?> increaseLike(Long postId, Long memberId);
 }

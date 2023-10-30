@@ -25,9 +25,15 @@ import com.wanted.teamV.type.SnsType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +49,7 @@ public class PostServiceImpl implements PostService {
     private final MemberRepository memberRepository;
     private final PostHistoryRepository postHistoryRepository;
     private final PostHashtagRepository postHashtagRepository;
+    private final RestTemplate restTemplate;
 
     //게시물 상세 조회
     @Override
@@ -124,11 +131,12 @@ public class PostServiceImpl implements PostService {
 
     /**
      * 게시물 조회 메서드
-     * @param hashtag : default = 사용자 account, 다른 해시태그로 검색 가능
-     * @param type : 게시물이 올라와 있는 플랫폼 (ex. instagram)
-     * @param orderBy : 정렬 순서 (default = created_at_desc) 날짜, 조회수, 좋아요수, 공유수
+     *
+     * @param hashtag  : default = 사용자 account, 다른 해시태그로 검색 가능
+     * @param type     : 게시물이 올라와 있는 플랫폼 (ex. instagram)
+     * @param orderBy  : 정렬 순서 (default = created_at_desc) 날짜, 조회수, 좋아요수, 공유수
      * @param searchBy : 검색어가 제목, 내용 또는 제목&내용(default)에 포함되어 있는 게시물만 검색
-     * @param search : 검색어
+     * @param search   : 검색어
      * @param pageable : 한 페이지에 보여줄 게시물 개수 및 현재 보여줄 페이지
      * @return
      */
@@ -208,6 +216,66 @@ public class PostServiceImpl implements PostService {
         result.setEmpty(sort.isEmpty());
 
         return result;
+    }
+
+
+    @Override
+    public ResponseEntity<?> increaseLike(Long postId, Long memberId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        String contentId = post.getContentId();
+        String url = "";
+
+        switch (post.getType()) {
+            case FACEBOOK:
+                url = "https://www.facebook.com";
+                break;
+            case INSTAGRAM:
+                url = "https://www.instagram.com";
+                break;
+            case X:
+                url = "https://www.twitter.com";
+                break;
+            case THREADS:
+                url = "https://www.threads.com";
+                break;
+        }
+
+        URI apiUri = UriComponentsBuilder
+                .fromUriString(url)
+                .path("/likes/{contendId}")
+                .encode()
+                .buildAndExpand(contentId)
+                .toUri();
+
+        ResponseEntity<?> response = null;
+
+        try {
+            response = restTemplate.postForEntity(apiUri, contentId, String.class);
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.MOVED_PERMANENTLY) {
+                post.increaseLikeCount();
+            } else if (response == null) {
+                response = ResponseEntity.status(HttpStatus.OK).body("OK");
+            }
+        } catch (HttpClientErrorException ex) {
+            ex.printStackTrace();
+            post.increaseLikeCount();
+        }
+
+        PostHistory postHistory = PostHistory.builder()
+                .post(post)
+                .member(member)
+                .type(HistoryType.LIKE)
+                .build();
+
+        try {
+            postHistoryRepository.save(postHistory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
     }
 
 }
