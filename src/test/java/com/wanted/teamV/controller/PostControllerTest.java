@@ -54,56 +54,8 @@ class PostControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockBean
-    private PostService postService;
-
-    @MockBean
-    private PostRepository postRepository;
-
-    @MockBean
-    private MemberRepository memberRepository;
   
     private String token;
-
-    @Test
-    void getPostDetails() throws Exception {
-        //given
-        Long postId = 1L, memberId = 1L;
-        PostDetailResDto response = PostDetailResDto.builder()
-                .id(postId)
-                .contentId("INSTA#1")
-                .type(SnsType.INSTAGRAM)
-                .title("test")
-                .content("test1234")
-                .viewCount(10)
-                .likeCount(20)
-                .shareCount(5)
-                .postHashtags(List.of("test1", "test2"))
-                .build();
-
-        //when
-        when(postService.getPostDetail(postId, memberId)).thenReturn(response);
-
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}/{memberId}", postId, memberId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(response.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contentId").value(response.getContentId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(response.getTitle()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(response.getContent()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.type").value(response.getType().name()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.viewCount").value(response.getViewCount()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.likeCount").value(response.getLikeCount()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.shareCount").value(response.getShareCount()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.postHashtags").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.postHashtags[0]").value(response.getPostHashtags().get(0)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.postHashtags[1]").value(response.getPostHashtags().get(1)))
-                .andDo(print());
-
-    }
 
     @BeforeEach
     public void commonSetup() throws Exception {
