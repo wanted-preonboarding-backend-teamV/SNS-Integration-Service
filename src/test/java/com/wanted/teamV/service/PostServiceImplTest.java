@@ -26,12 +26,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -141,8 +135,7 @@ class PostServiceImplTest {
         SearchByType searchBy = SearchByType.TITLE;
         String search = "성수동";
         int page = 0;
-        int size = 10;
-        Pageable pageable = PageRequest.of(page, size);
+        int pageCount = 10;
 
         Post post1 = Post.builder()
                 .contentId("post1")
@@ -171,7 +164,7 @@ class PostServiceImplTest {
         when(postRepository.filterPosts(postIds, type, orderBy, searchBy, search)).thenReturn(filteredPosts);
 
         // when
-        ListResDto<PostResDto> response = postService.getPosts(hashtag, type, orderBy, searchBy, search, pageable);
+        ListResDto<PostResDto> response = postService.getPosts(hashtag, type, orderBy, searchBy, search, pageCount, page);
 
         // then
         assertEquals(1, response.getNumberOfElements());
@@ -194,14 +187,13 @@ class PostServiceImplTest {
         SearchByType searchBy = SearchByType.TITLE;
         String search = "명동";
         int page = 0;
-        int size = 10;
-        Pageable pageable = PageRequest.of(page, size);
+        int pageCount = 10;
 
         postHashtagRepository.findPostIdsByHashtag(hashtag);
 
         // when & then
         CustomException customException = assertThrows(CustomException.class,
-                () -> postService.getPosts(hashtag, type, orderBy, searchBy, search, pageable));
+                () -> postService.getPosts(hashtag, type, orderBy, searchBy, search, pageCount, page));
         assertEquals(ErrorCode.NO_RELATED_POSTS_FOUND, customException.getErrorCode());
     }
 
@@ -215,8 +207,7 @@ class PostServiceImplTest {
         SearchByType searchBy = SearchByType.TITLE;
         String search = "명동";
         int page = 0;
-        int size = 10;
-        Pageable pageable = PageRequest.of(page, size);
+        int pageCount = 10;
 
         Post post1 = Post.builder()
                 .contentId("post1")
@@ -235,7 +226,7 @@ class PostServiceImplTest {
 
         // when & then
         CustomException customException = assertThrows(CustomException.class,
-                () -> postService.getPosts(hashtag, type, orderBy, searchBy, search, pageable));
+                () -> postService.getPosts(hashtag, type, orderBy, searchBy, search, pageCount, page));
         assertEquals(ErrorCode.NO_RELATED_POSTS_FOUND, customException.getErrorCode());
     }
 
@@ -281,10 +272,12 @@ class PostServiceImplTest {
     @DisplayName("게시물 상세 조회 - 실패(게시물 없음)")
     public void getPostDetails_No_Post() throws Exception {
         //given
+        Long postId = 2L;
+        Long memberId = 1L;
 
         //when & then
         CustomException customException = assertThrows(CustomException.class,
-                () -> postService.getPostDetail(2L, 1L));
+                () -> postService.getPostDetail(postId, memberId));
         assertEquals(ErrorCode.POST_NOT_FOUND, customException.getErrorCode());
     }
 }

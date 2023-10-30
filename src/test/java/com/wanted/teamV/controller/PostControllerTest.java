@@ -1,31 +1,20 @@
 package com.wanted.teamV.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.wanted.teamV.dto.res.PostDetailResDto;
-import com.wanted.teamV.repository.MemberRepository;
-import com.wanted.teamV.repository.PostRepository;
-import com.wanted.teamV.service.PostService;
-import com.wanted.teamV.type.SnsType;
-
 import com.jayway.jsonpath.JsonPath;
 import com.wanted.teamV.dto.req.MemberApproveReqDto;
 import com.wanted.teamV.dto.req.MemberJoinReqDto;
 import com.wanted.teamV.dto.req.MemberLoginReqDto;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
+import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.exception.ErrorCode;
+import com.wanted.teamV.type.SnsType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -37,7 +26,6 @@ import org.springframework.util.MultiValueMapAdapter;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -218,6 +206,7 @@ class PostControllerTest {
                         .header("Authorization", "Bearer " + token)
                 )
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].contentId").value("post2"))
                 .andDo(print());
     }
 
@@ -229,6 +218,8 @@ class PostControllerTest {
                         .header("Authorization", "Bearer " + token)
                 )
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].contentId").value("post2"))
+                .andExpect(jsonPath("$.content[1].contentId").value("post1"))
                 .andDo(print());
     }
 
@@ -246,6 +237,7 @@ class PostControllerTest {
                         .header("Authorization", "Bearer " + token)
                 )
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].contentId").value("post1"))
                 .andDo(print());
     }
 
@@ -264,6 +256,7 @@ class PostControllerTest {
                         .header("Authorization", "Bearer " + token)
                 )
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].contentId").value("post1"))
                 .andDo(print());
     }
 
@@ -273,8 +266,8 @@ class PostControllerTest {
         // given
         MultiValueMapAdapter<String, String> params = new LinkedMultiValueMap<>();
         params.add("hashtag", "맛집");
-        params.add("size", "1");
-        params.add("page", "0");
+        params.add("pageCount", "1");
+        params.add("page", "1");
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
@@ -282,6 +275,7 @@ class PostControllerTest {
                         .header("Authorization", "Bearer " + token)
                 )
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].contentId").value("post1"))
                 .andDo(print());
     }
 
@@ -291,8 +285,8 @@ class PostControllerTest {
         // given
         MultiValueMapAdapter<String, String> params = new LinkedMultiValueMap<>();
         params.add("hashtag", "맛집");
-        params.add("size", "1");
-        params.add("page", "2");
+        params.add("pageCount", "1");
+        params.add("page", "3");
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
@@ -344,20 +338,10 @@ class PostControllerTest {
     @DisplayName("게시물 상세 정보 조회 - 성공")
     public void getPostDetails() throws Exception {
         //given
-        PostDetailResDto response = PostDetailResDto.builder()
-                .id(1L)
-                .contentId("INSTA#1")
-                .type(SnsType.INSTAGRAM)
-                .title("test")
-                .content("test1234")
-                .viewCount(10)
-                .likeCount(20)
-                .shareCount(5)
-                .postHashtags(List.of("test1", "test2"))
-                .build();
+        Long postId = 1L;
 
         //when & then
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts/post/{postId}", response.getId())
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/post/{postId}", postId)
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -367,21 +351,11 @@ class PostControllerTest {
     @Test
     @DisplayName("게시물 상세 정보 조회 - 실패(게시물 없음)")
     public void getPostDetails_No_Post() throws Exception {
-        //given
-        PostDetailResDto response = PostDetailResDto.builder()
-                .id(1L)
-                .contentId("INSTA#1")
-                .type(SnsType.INSTAGRAM)
-                .title("test")
-                .content("test1234")
-                .viewCount(10)
-                .likeCount(20)
-                .shareCount(5)
-                .postHashtags(List.of("test1", "test2"))
-                .build();
+        // given
+        Long postId = 3L;
 
         //when & then
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts/post/{postId}", 3L)
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/post/{postId}", postId)
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -389,4 +363,5 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.message").value(ErrorCode.POST_NOT_FOUND.getMessage()))
                 .andDo(print());
     }
+
 }
