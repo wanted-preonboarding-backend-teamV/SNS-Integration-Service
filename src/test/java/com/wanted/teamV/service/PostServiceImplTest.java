@@ -26,7 +26,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +58,9 @@ class PostServiceImplTest {
 
     @Mock
     private PostHistoryRepository postHistoryRepository;
+
+    @Mock
+    private RestTemplate restTemplate;
 
     @Test
     @DisplayName("게시물 생성 - 성공")
@@ -278,6 +286,43 @@ class PostServiceImplTest {
         //when & then
         CustomException customException = assertThrows(CustomException.class,
                 () -> postService.getPostDetail(postId, memberId));
+        assertEquals(ErrorCode.POST_NOT_FOUND, customException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("게시물 좋아요 - 성공")
+    public void increaseLike() throws Exception {
+        //given
+        Long postId = 1L, memberId = 1L;
+
+        Post post1 = Post.testPostEntity();
+        Member member = mock(Member.class);
+
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post1));
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(member.getId()).thenReturn(memberId);
+
+        ResponseEntity<String> apiResponse = new ResponseEntity<>("OK", HttpStatus.OK);
+        when(restTemplate.postForEntity(any(URI.class), any(), eq(String.class))).thenReturn(apiResponse);
+
+        //when
+        ResponseEntity<?> result = postService.increaseLike(post1.getId(), member.getId());
+
+        //then
+        assertEquals(apiResponse.getStatusCode(), result.getStatusCode());
+        assertEquals(1, post1.getLikeCount());
+    }
+
+    @Test
+    @DisplayName("게시물 좋아요 - 실패(게시물 없음)")
+    public void increaseLike_No_Post() throws Exception {
+        //given
+        Long postId = 2L;
+        Long memberId = 1L;
+
+        //when & then
+        CustomException customException = assertThrows(CustomException.class,
+                () -> postService.increaseLike(postId, memberId));
         assertEquals(ErrorCode.POST_NOT_FOUND, customException.getErrorCode());
     }
 }

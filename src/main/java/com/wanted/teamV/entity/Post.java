@@ -76,4 +76,14 @@ public class Post {
     public void increaseShareCount() {
         this.shareCount++;
     }
+
+    public static Post testPostEntity() {
+        Post post = new Post();
+        post.id = 1L;
+        post.contentId = "123";
+        post.type = SnsType.INSTAGRAM;
+        post.likeCount = 0;
+        post.shareCount = 0;
+        return post;
+    }
 }
