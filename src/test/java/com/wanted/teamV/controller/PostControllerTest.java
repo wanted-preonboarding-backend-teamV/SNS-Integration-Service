@@ -1,10 +1,13 @@
 package com.wanted.teamV.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import com.wanted.teamV.dto.req.MemberApproveReqDto;
+import com.wanted.teamV.dto.req.MemberJoinReqDto;
+import com.wanted.teamV.dto.req.MemberLoginReqDto;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
 import com.wanted.teamV.exception.ErrorCode;
-import com.wanted.teamV.repository.PostHashtagRepository;
-import com.wanted.teamV.repository.PostRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +37,42 @@ class PostControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private PostRepository postRepository;
+    String token;
 
-    @Autowired
-    private PostHashtagRepository postHashtagRepository;
+    @BeforeEach
+    public void commonSetup() throws Exception {
+        // 회원가입
+        MemberJoinReqDto joinReqDto = new MemberJoinReqDto("mockUser", "mockUser@gmail.com", "mockUser1234!");
+        MvcResult result = mockMvc.perform(post("/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(joinReqDto))
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        String code = JsonPath.parse(response).read("$.code");
+
+        // 가입승인
+        MemberApproveReqDto approveReqDto = new MemberApproveReqDto("mockUser", "mockUser1234!", code);
+        mockMvc.perform(post("/members/approve")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(approveReqDto))
+                )
+                .andExpect(status().isNoContent());
+
+        // 로그인
+        MemberLoginReqDto loginReqDto = new MemberLoginReqDto("mockUser", "mockUser1234!");
+        result = mockMvc.perform(post("/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginReqDto))
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        response = result.getResponse().getContentAsString();
+        token = JsonPath.parse(response).read("$.accessToken");
+    }
 
     @Test
     @DisplayName("게시물 생성 - 성공")
@@ -65,7 +99,8 @@ class PostControllerTest {
                 .build();
 
         // when & then
-        MvcResult result = mockMvc.perform(post("/posts")
+        mockMvc.perform(post("/posts")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                 )
@@ -100,6 +135,7 @@ class PostControllerTest {
 
         // when & then
         mockMvc.perform(post("/posts")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                 )

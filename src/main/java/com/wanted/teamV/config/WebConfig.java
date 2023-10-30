@@ -1,11 +1,11 @@
 package com.wanted.teamV.config;
 
 import com.wanted.teamV.controller.AuthenticationPrincipalArgumentResolver;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
 import com.wanted.teamV.type.converter.StringToStatisticsSortTypeConverter;
 import com.wanted.teamV.type.converter.StringToStatisticsTimeTypeConverter;
 import com.wanted.teamV.type.converter.StringToStatisticsValueTypeConverter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
