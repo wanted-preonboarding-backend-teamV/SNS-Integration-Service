@@ -46,10 +46,14 @@ public class Member {
     public void verifyCode(String code) {
          if(!this.code.equalsIgnoreCase(code)) {
             throw new CustomException(INVALID_AUTHENTICATION_CODE);
-         };
+         }
     }
 
     public void approve() {
         this.status = MemberStatus.APPROVE;
+    }
+
+    public boolean isApproved() {
+        return status.equals(MemberStatus.APPROVE);
     }
 }
