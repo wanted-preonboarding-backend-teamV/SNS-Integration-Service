@@ -98,6 +98,15 @@ public class PostController {
         return ResponseEntity.ok(response.getStatusCode());
     }
 
+    @PostMapping("/shares/{postId}")
+    public ResponseEntity<?> increaseShare(
+            @PathVariable Long postId
+    ) {
+        Long memberId = 1L;
+        ResponseEntity<?> response = postService.increaseShare(postId, memberId);
+        return ResponseEntity.ok(response.getStatusCode());
+    }
+
     private String getMemberAccount(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(INVALID_REQUEST));
