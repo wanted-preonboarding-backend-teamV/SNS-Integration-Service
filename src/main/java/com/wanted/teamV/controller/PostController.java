@@ -80,30 +80,31 @@ public class PostController {
     }
 
     //게시물 상세 조회 API
-    @GetMapping("/{postId}/{memberId}")
+    @GetMapping("/post/{postId}")
     public ResponseEntity<PostDetailResDto> getPostDetails(
-      @PathVariable Long postId, @PathVariable Long memberId
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long postId
     ) {
-        PostDetailResDto responseDto = postService.getPostDetail(postId, memberId);
+        PostDetailResDto responseDto = postService.getPostDetail(postId, loginMember.id());
         return ResponseEntity.ok(responseDto);
     }
 
     //게시물 좋아요 API
     @PostMapping("/likes/{postId}")
     public ResponseEntity<?> increaseLike(
+            @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long postId
     ) {
-        Long memberId = 1L;
-        ResponseEntity<?> response = postService.increaseLike(postId, memberId);
+        ResponseEntity<?> response = postService.increaseLike(postId, loginMember.id());
         return ResponseEntity.ok(response.getStatusCode());
     }
 
     @PostMapping("/shares/{postId}")
     public ResponseEntity<?> increaseShare(
+            @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long postId
     ) {
-        Long memberId = 1L;
-        ResponseEntity<?> response = postService.increaseShare(postId, memberId);
+        ResponseEntity<?> response = postService.increaseShare(postId, loginMember.id());
         return ResponseEntity.ok(response.getStatusCode());
     }
 
