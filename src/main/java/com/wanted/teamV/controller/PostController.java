@@ -2,18 +2,18 @@ package com.wanted.teamV.controller;
 
 import com.wanted.teamV.dto.LoginMember;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
-import com.wanted.teamV.dto.res.ListResDto;
 import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.dto.res.PostResDto;
 import com.wanted.teamV.entity.Member;
 import com.wanted.teamV.exception.CustomException;
 import com.wanted.teamV.repository.MemberRepository;
 import com.wanted.teamV.service.PostService;
-import com.wanted.teamV.type.OrderByType;
 import com.wanted.teamV.type.SearchByType;
 import com.wanted.teamV.type.SnsType;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,13 +44,13 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    // 게시물 목록 조회 API
     @GetMapping
-    public ResponseEntity<ListResDto<PostResDto>> getPosts(
+    public ResponseEntity<Page<PostResDto>> getPosts(
             @AuthenticationPrincipal LoginMember loginMember,
             @RequestParam(value = "hashtag", required = false) String hashtag,
             @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value = "orderBy", defaultValue = "created_at_desc") String orderBy,
+            @RequestParam(value = "orderBy", defaultValue = "createdAt") String orderBy,
+            @RequestParam(value = "sortBy", defaultValue = "desc") String sortBy,
             @RequestParam(value = "searchBy", defaultValue = "both") String searchBy,
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "pageCount", defaultValue = "10") int pageCount,
@@ -64,9 +64,17 @@ public class PostController {
             hashtag = getMemberAccount(loginMember.id());
         }
 
-        ListResDto<PostResDto> responses = postService.getPosts(hashtag, SnsType.parse(type),
-                OrderByType.parse(orderBy), SearchByType.parse(searchBy), search, pageCount, page);
-        return ResponseEntity.ok(responses);
+        if (pageCount <= 0 || page < 0) {
+            throw new CustomException(INVALID_PAGE_REQUEST);
+        }
+
+        Sort.Direction direction = sortBy.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, orderBy);
+        PageRequest pageRequest = PageRequest.of(page, pageCount, sort);
+
+        Page<PostResDto> paginatedPosts = postService.getPosts(hashtag, SnsType.parse(type), SearchByType.parse(searchBy), search, pageRequest);
+
+        return ResponseEntity.ok().body(paginatedPosts);
     }
 
     //게시물 상세 조회 API

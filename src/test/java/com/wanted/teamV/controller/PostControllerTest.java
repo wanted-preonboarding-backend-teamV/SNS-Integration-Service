@@ -6,9 +6,7 @@ import com.wanted.teamV.dto.req.MemberApproveReqDto;
 import com.wanted.teamV.dto.req.MemberJoinReqDto;
 import com.wanted.teamV.dto.req.MemberLoginReqDto;
 import com.wanted.teamV.dto.req.PostCreateReqDto;
-import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.exception.ErrorCode;
-import com.wanted.teamV.type.SnsType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -199,14 +197,15 @@ class PostControllerTest {
                 .andDo(print());
 
         // 정렬
-        params.add("orderBy", "share_count_desc");
+        params.add("orderBy", "shareCount");
+        params.add("sortBy", "asc");
 
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
                         .params(params)
                         .header("Authorization", "Bearer " + token)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].contentId").value("post2"))
+                .andExpect(jsonPath("$.content[0].contentId").value("post1"))
                 .andDo(print());
     }
 
@@ -276,16 +275,16 @@ class PostControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].contentId").value("post1"))
+                .andExpect(jsonPath("$.totalPages").value(2))
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("게시물 조회 없는 페이지 요청")
+    @DisplayName("게시물 조회 - 없는 페이지 요청")
     public void getPosts_Pageable_Failure() throws Exception {
         // given
         MultiValueMapAdapter<String, String> params = new LinkedMultiValueMap<>();
         params.add("hashtag", "맛집");
-        params.add("pageCount", "1");
         params.add("page", "3");
 
         // when & then

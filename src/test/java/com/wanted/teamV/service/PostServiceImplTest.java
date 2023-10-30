@@ -1,7 +1,6 @@
 package com.wanted.teamV.service;
 
 import com.wanted.teamV.dto.req.PostCreateReqDto;
-import com.wanted.teamV.dto.res.ListResDto;
 import com.wanted.teamV.dto.res.PostDetailResDto;
 import com.wanted.teamV.dto.res.PostResDto;
 import com.wanted.teamV.entity.Member;
@@ -16,7 +15,6 @@ import com.wanted.teamV.repository.PostHistoryRepository;
 import com.wanted.teamV.repository.PostRepository;
 import com.wanted.teamV.service.impl.PostServiceImpl;
 import com.wanted.teamV.type.HistoryType;
-import com.wanted.teamV.type.OrderByType;
 import com.wanted.teamV.type.SearchByType;
 import com.wanted.teamV.type.SnsType;
 import org.junit.jupiter.api.DisplayName;
@@ -26,8 +24,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -131,11 +131,11 @@ class PostServiceImplTest {
         // given
         String hashtag = "맛집";
         SnsType type = SnsType.INSTAGRAM;
-        OrderByType orderBy = OrderByType.LIKE_COUNT_DESC;
         SearchByType searchBy = SearchByType.TITLE;
         String search = "성수동";
         int page = 0;
         int pageCount = 10;
+        Pageable pageable = PageRequest.of(page, pageCount, Sort.by(Sort.Direction.DESC, "likeCount"));
 
         Post post1 = Post.builder()
                 .contentId("post1")
@@ -157,14 +157,16 @@ class PostServiceImplTest {
                 .shareCount(5)
                 .build();
 
+        List<Post> postList = Collections.singletonList(post1);
+        Page<Post> postPage = new PageImpl<>(postList, pageable, postList.size());
+
         List<Long> postIds = Arrays.asList(post1.getId(), post2.getId());
         when(postHashtagRepository.findPostIdsByHashtag(hashtag)).thenReturn(postIds);
 
-        List<Post> filteredPosts = Arrays.asList(post1);
-        when(postRepository.filterPosts(postIds, type, orderBy, searchBy, search)).thenReturn(filteredPosts);
+        when(postRepository.filterPosts(postIds, type, searchBy, search, pageable)).thenReturn(postPage);
 
         // when
-        ListResDto<PostResDto> response = postService.getPosts(hashtag, type, orderBy, searchBy, search, pageCount, page);
+        Page<PostResDto> response = postService.getPosts(hashtag, type, searchBy, search, pageable);
 
         // then
         assertEquals(1, response.getNumberOfElements());
@@ -183,50 +185,17 @@ class PostServiceImplTest {
         // given
         String hashtag = "한국";
         SnsType type = SnsType.INSTAGRAM;
-        OrderByType orderBy = OrderByType.LIKE_COUNT_DESC;
         SearchByType searchBy = SearchByType.TITLE;
         String search = "명동";
         int page = 0;
         int pageCount = 10;
+        Pageable pageable = PageRequest.of(page, pageCount, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         postHashtagRepository.findPostIdsByHashtag(hashtag);
 
         // when & then
         CustomException customException = assertThrows(CustomException.class,
-                () -> postService.getPosts(hashtag, type, orderBy, searchBy, search, pageCount, page));
-        assertEquals(ErrorCode.NO_RELATED_POSTS_FOUND, customException.getErrorCode());
-    }
-
-    @Test
-    @DisplayName("게시물 조회 - 관련 게시물 없음")
-    public void getPosts_NoRelatedPosts2() {
-        // given
-        String hashtag = "맛집";
-        SnsType type = SnsType.INSTAGRAM;
-        OrderByType orderBy = OrderByType.LIKE_COUNT_DESC;
-        SearchByType searchBy = SearchByType.TITLE;
-        String search = "명동";
-        int page = 0;
-        int pageCount = 10;
-
-        Post post1 = Post.builder()
-                .contentId("post1")
-                .title("성수동 맛집 투어")
-                .content("오늘은 성수동 맛집 투어를 다녀왔습니다. 총 3군데를 다녀왔는데 여기는 어쩌구 저기는 저쩌구 했습니다.")
-                .type(SnsType.INSTAGRAM)
-                .viewCount(100)
-                .likeCount(40)
-                .shareCount(10)
-                .build();
-
-        List<Long> postIds = Arrays.asList(post1.getId());
-        when(postHashtagRepository.findPostIdsByHashtag(hashtag)).thenReturn(postIds);
-
-        postRepository.filterPosts(postIds, type, orderBy, searchBy, search);
-
-        // when & then
-        CustomException customException = assertThrows(CustomException.class,
-                () -> postService.getPosts(hashtag, type, orderBy, searchBy, search, pageCount, page));
+                () -> postService.getPosts(hashtag, type, searchBy, search, pageable));
         assertEquals(ErrorCode.NO_RELATED_POSTS_FOUND, customException.getErrorCode());
     }
 
