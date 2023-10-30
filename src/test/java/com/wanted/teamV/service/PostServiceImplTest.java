@@ -325,4 +325,41 @@ class PostServiceImplTest {
                 () -> postService.increaseLike(postId, memberId));
         assertEquals(ErrorCode.POST_NOT_FOUND, customException.getErrorCode());
     }
+
+    @Test
+    @DisplayName("게시물 공유 - 성공")
+    public void increaseShare() throws Exception {
+        //given
+        Long postId = 1L, memberId = 1L;
+
+        Post post1 = Post.testPostEntity();
+        Member member = mock(Member.class);
+
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post1));
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(member.getId()).thenReturn(memberId);
+
+        ResponseEntity<String> apiResponse = new ResponseEntity<>("OK", HttpStatus.OK);
+        when(restTemplate.postForEntity(any(URI.class), any(), eq(String.class))).thenReturn(apiResponse);
+
+        //when
+        ResponseEntity<?> result = postService.increaseShare(post1.getId(), member.getId());
+
+        //then
+        assertEquals(apiResponse.getStatusCode(), result.getStatusCode());
+        assertEquals(1, post1.getShareCount());
+    }
+
+    @Test
+    @DisplayName("게시물 공유 - 실패(게시물 없음)")
+    public void increaseShare_No_Post() throws Exception {
+        //given
+        Long postId = 2L;
+        Long memberId = 1L;
+
+        //when & then
+        CustomException customException = assertThrows(CustomException.class,
+                () -> postService.increaseShare(postId, memberId));
+        assertEquals(ErrorCode.POST_NOT_FOUND, customException.getErrorCode());
+    }
 }

@@ -392,4 +392,31 @@ class PostControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("게시물 공유 - 성공")
+    public void increaseShareCount() throws Exception {
+        //given
+        Long postId = 1L;
+
+        //when & then
+        mockMvc.perform(post("/posts/shares/{postId}", postId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시물 공유 - 실패(게시물 없음)")
+    public void increaseShareCount_No_Post() throws Exception {
+        //given
+        Long postId = 3L;
+
+        //when & then
+        mockMvc.perform(post("/posts/shares/{postId}", postId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.POST_NOT_FOUND.name()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.POST_NOT_FOUND.getMessage()))
+                .andDo(print());
+    }
 }
