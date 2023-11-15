@@ -1,4 +1,3 @@
-![logo](https://static.wanted.co.kr/images/events/3178/58ac3248.jpg)
 
 # 소셜 미디어 통합 Feed 서비스
 본 서비스는 유저 계정의 해시태그를 기반으로 인스타그램, 스레드, 페이스북, 트위터 등 복수의 SNS에 게시된 게시물 중 유저의 해시태그가 포함된 게시물들을 하나의 서비스에서 확인할 수 있는 통합 Feed 어플리케이션입니다.
@@ -8,10 +7,11 @@
 ## Table of Contents
 - [개요](#개요)
 - [Skils](#skils)
-- [Teams](#teams)
-- [Running Tests](#running-tests)
-- [API Reference](#api-reference)
+- [Team](#team)
 - [프로젝트 진행 및 이슈 관리](#프로젝트-진행-및-이슈-관리)
+- [ERD](#erd)
+- [API Reference](#api-reference)
+- [Running Tests](#running-tests)
 - [구현과정(설계 및 의도)](#구현과정(설계-및-의도))
 - [TIL 및 회고](#til-및-회고)
 - [References](#references)
@@ -21,6 +21,7 @@
 
 ## 개요
 고객이 다수의 SNS를 사용하지 않고 하나의 서비스를 통해  유저 또는 브랜드의 SNS 노출 게시물 및 통계를 확인하기 위한 서비스
+
 <br/>
 
 
@@ -28,33 +29,52 @@
 언어 및 프레임워크: ![Static Badge](https://img.shields.io/badge/JAVA-17-blue) ![Static Badge](https://img.shields.io/badge/SpringBoot-3.1.5-green)<br/>
 데이터베이스: ![Static Badge](https://img.shields.io/badge/MySQL--red)<br/>
 테스트 데이터베이스: ![Static Badge](https://img.shields.io/badge/H2--red)
+
 <br/>
 
-## Teams
+## Team
 
 | 팀원      | 담당                         |
 |---------|----------------------------|
-| 신민석(팀장) | 게시물 상세 조회, 게시물 좋아요, 게시물 공유 |
-| 김나윤     | 게시물 생성, 게시물 목록 조회          |
-| 남세원     | 사용자 회원가입, 가입승인, 로그인        |
-| 원정연     | 게시물 통계                     |
+| [신민석](https://github.com/shinmin9812)  `(팀장)` | 게시물 상세 조회, 게시물 좋아요, 게시물 공유 |
+| [김나윤](https://github.com/nayoonk928)      | 게시물 생성, 게시물 목록 조회          |
+| [남세원](https://github.com/nswon)      | 사용자 회원가입, 가입승인, 로그인        |
+| [원정연](https://github.com/jjungyeun)     | 게시물 통계                     |
 
 
 <br/>
 
-## Running Tests
 
->  ![Static Badge](https://img.shields.io/badge/Test_Passed-54/54-green) <br/>
-![test](https://github.com/wanted-preonboarding-backend-teamV/SNS-Integration-Service/assets/83534757/eee78bcc-0a82-46e9-ae94-906fa217f35f)
+## 프로젝트 진행 및 이슈 관리
+
+![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)
+<img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white">
+<img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=Discord&logoColor=white">
+
+
+### 일정 관리 - Notion
+
+[요구사항 분석 및 일정 관리 - Link](https://wonwonjung.notion.site/7169b5be3652485b82df0c1a2b639788?pvs=4)
+
+![task-management](https://github.com/wanted-preonboarding-backend-teamV/Restaurant-Recommendation/assets/29030538/891af65f-7d4b-4963-951f-ed0f4d22ceb9)
+
+### 이슈 관리 - Github
+![issue-management](https://github.com/wanted-preonboarding-backend-teamV/Restaurant-Recommendation/assets/29030538/d8b5b358-87f7-4dfd-a3fe-67b6b4a2b70f)
+
+<br/>
+
+## ERD
+
+![erd](https://github.com/wanted-preonboarding-backend-teamV/Restaurant-Recommendation/assets/29030538/f69e1fa2-c3ff-4e0b-a1da-7e987b0b887e)
 
 <br/>
 
 
 ## API Reference
-[Notion](https://wonwonjung.notion.site/API-d4e42a31ea424384b4b6edb4664ea8ef?pvs=4)
+[API 명세서 - Notion Link](https://wonwonjung.notion.site/API-d4e42a31ea424384b4b6edb4664ea8ef?pvs=4)
 
 <details>
-<summary>Member</summary>
+<summary>Member - click</summary>
 
 #### 회원가입
 
@@ -110,7 +130,7 @@ POST /members/login
 
 </details>
 <details>
-<summary>Post</summary>
+<summary>Post - click</summary>
 
 #### Request
 POST /posts
@@ -277,7 +297,7 @@ Content-Type: application/json
 ```
 </details>
 <details>
-<summary>Statistics</summary>
+<summary>Statistics - click</summary>
 
 #### Request
 
@@ -327,22 +347,21 @@ GET /statistics
 ]
 ```
 </details>
+
 <br/>
 
+## Running Tests
 
-## 프로젝트 진행 및 이슈 관리
+>  ![Static Badge](https://img.shields.io/badge/Test_Passed-54/54-green) <br/>
+![test](https://github.com/wanted-preonboarding-backend-teamV/SNS-Integration-Service/assets/83534757/eee78bcc-0a82-46e9-ae94-906fa217f35f)
 
-![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)
-<img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white">
-<img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=Discord&logoColor=white">
 <br/>
 
 
 ## 구현과정(설계 및 의도)
 
-[Notion](https://wonwonjung.notion.site/Feed-214a058c86f642f5b31d993826032c20?pvs=4)
 <details>
-<summary>게시물과 해시태그 연결성 저장 방식</summary>
+<summary>게시물과 해시태그 연결성 저장 방식 - click</summary>
 
 1. 게시물 테이블에 해시태그 리스트를 string으로 직접 넣기
 2. 해시태그 테이블 생성
@@ -358,14 +377,14 @@ GET /statistics
 </details>
 
 <details>
-<summary>Pageable 도입</summary>
+<summary>Pageable 도입 - click</summary>
 
 - 처음 코드는 정렬 정보를 enum 으로 처리하여 switch문을 사용했지만, Pageable을 이용한 정렬을 도입하면서 동적으로 정렬을 처리하고 새로운 정렬 기준이 추가되거나 변경되더라도 코드를 변경할 필요가 없게 됩니다.
 
 </details>
 
 <details>
-<summary>외부 API 구현방법</summary>
+<summary>외부 API 구현방법 - click</summary>
 
 #### RestTemplate VS OpenFeign
 
@@ -389,7 +408,7 @@ GET /statistics
 
 <details>
 
-<summary>MySQL의 DATE_FORMAT으로 통계 쿼리 및 파싱 로직 최소화</summary>
+<summary>MySQL의 DATE_FORMAT으로 통계 쿼리 및 파싱 로직 최소화 - click</summary>
 
 - 통계값을 조회하고 파싱하는 방법
   1. 조건 만족하는 기록 전체 다 불러와서 앱에서 파싱
@@ -407,11 +426,9 @@ GET /statistics
 
 ## TIL 및 회고
 
-- [Pageable](https://www.notion.so/Pageable-750088017de0438fa42484dbacaca892?pvs=4)
-
 <details>
 
-<summary>통계 RequestParam을 Enum 타입으로 받기</summary>
+<summary>통계 RequestParam을 Enum 타입으로 받기 - click</summary>
 
 1. @RequestParam에 Enum을 사용하면 소문자로 들어오는 파라미터를 변환하지 못하는 문제가 있음
 2. 해당 문제를 해결하기 위해 소문자로 들어온 정보를 대문자로 변환한 뒤 Enum 값과 매칭하는 변환기를 구현하고 등록함
@@ -456,6 +473,8 @@ public class WebConfig implements WebMvcConfigurer {
 ```
 
 </details>
+
+[Pageable 사용](https://www.notion.so/Pageable-750088017de0438fa42484dbacaca892?pvs=4)
 
 <br/>
 
