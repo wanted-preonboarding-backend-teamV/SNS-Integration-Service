@@ -54,7 +54,7 @@
 
 ### 일정 관리 - Notion
 
-[요구사항 분석 및 일정 관리 - Link](https://wonwonjung.notion.site/7169b5be3652485b82df0c1a2b639788?pvs=4)
+[요구사항 분석 및 일정 관리 - Link](https://wonwonjung.notion.site/Feed-214a058c86f642f5b31d993826032c20?pvs=4)
 
 ![task-management](https://github.com/wanted-preonboarding-backend-teamV/Restaurant-Recommendation/assets/29030538/891af65f-7d4b-4963-951f-ed0f4d22ceb9)
 
