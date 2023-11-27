@@ -59,8 +59,7 @@
 ![task-management](https://github.com/wanted-preonboarding-backend-teamV/Restaurant-Recommendation/assets/29030538/891af65f-7d4b-4963-951f-ed0f4d22ceb9)
 
 ### 이슈 관리 - Github
-![issue-management](https://github.com/wanted-preonboarding-backend-teamV/Restaurant-Recommendation/assets/29030538/d8b5b358-87f7-4dfd-a3fe-67b6b4a2b70f)
-
+![issue-management](https://github.com/wanted-preonboarding-backend-teamV/SNS-Integration-Service/assets/83534757/93f9f709-35ae-4310-b865-17771273cd01)
 <br/>
 
 ## ERD
